@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Call Experience Preview | Aligned Impact</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1b4f8a;--orange:#f5a623;--cream:#faf8f4;--white:#ffffff;--border:#ddd8ce;--muted:#6b6659;--text:#1a1a1a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Outfit",sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{font-family:"Fraunces",serif;font-size:20px;font-weight:600;color:var(--navy);}
+.nav-brand span{font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--orange);display:block;margin-top:1px;}
+.back-link{font-size:13px;color:var(--navy);text-decoration:none;display:flex;align-items:center;gap:6px;}
+.back-link:hover{text-decoration:underline;}
+.hero{text-align:center;padding:60px 40px 40px;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--orange);margin-bottom:12px;}
+h1{font-family:"Fraunces",serif;font-size:clamp(26px,4vw,40px);font-weight:700;color:var(--navy);margin-bottom:14px;max-width:600px;margin-left:auto;margin-right:auto;}
+.hero-sub{font-size:16px;color:var(--muted);max-width:480px;margin:0 auto 48px;line-height:1.7;}
+/* Phone mockup */
+.phone-wrap{display:flex;justify-content:center;margin-bottom:60px;}
+.phone{width:280px;background:#1a1a2e;border-radius:40px;padding:12px;box-shadow:0 24px 80px rgba(27,79,138,0.25);position:relative;}
+.phone-notch{width:100px;height:24px;background:#1a1a2e;border-radius:0 0 16px 16px;margin:0 auto 12px;position:relative;z-index:2;}
+.phone-notch::before{content:'';position:absolute;left:50%;transform:translateX(-50%);top:6px;width:36px;height:12px;background:#0d0d1a;border-radius:6px;}
+.phone-screen{background:var(--white);border-radius:30px;overflow:hidden;min-height:480px;display:flex;flex-direction:column;}
+.phone-screen-top{background:var(--navy);padding:20px 20px 16px;text-align:center;}
+.phone-caller{font-size:22px;font-weight:600;color:#fff;margin-bottom:4px;font-family:"Fraunces",serif;}
+.phone-number{font-size:13px;color:rgba(255,255,255,.6);}
+.phone-duration{font-size:12px;color:rgba(255,255,255,.4);margin-top:4px;}
+.phone-screen-body{flex:1;padding:24px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+.audio-placeholder{width:100%;background:var(--cream);border:2px dashed var(--border);border-radius:16px;padding:24px 16px;text-align:center;}
+.play-btn{width:56px;height:56px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;cursor:pointer;transition:all .15s;}
+.play-btn:hover{background:#143d6e;transform:scale(1.05);}
+.play-icon{width:0;height:0;border-style:solid;border-width:10px 0 10px 18px;border-color:transparent transparent transparent #fff;margin-left:3px;}
+.audio-bar{height:4px;background:var(--border);border-radius:2px;margin:12px 0;position:relative;}
+.audio-progress{height:4px;width:0%;background:var(--navy);border-radius:2px;}
+.audio-times{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+.audio-label{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.audio-caption{font-size:11px;color:var(--muted);line-height:1.5;}
+.coming-soon-badge{background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.4);color:#8a5a00;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block;margin-bottom:12px;}
+.phone-home{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:10px auto 4px;}
+footer{background:var(--navy);padding:24px 40px;text-align:center;}
+footer p{font-size:13px;color:rgba(255,255,255,.5);}
+footer span{color:var(--orange);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Aligned Impact <span>Client Service Platform</span></div>
+  <a href="index.html" class="back-link">&#8592; Back to home</a>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Call Experience</div>
+  <h1>Hear exactly what your callers experience.</h1>
+  <p class="hero-sub">Every call is answered professionally, every time — day or night. Listen to a sample greeting below.</p>
+</div>
+
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="phone-screen-top">
+        <div class="phone-caller">Incoming Call</div>
+        <div class="phone-number">Harrison and Cole LLP</div>
+        <div class="phone-duration">Answering...</div>
+      </div>
+      <div class="phone-screen-body">
+        <div class="audio-placeholder">
+          <div class="coming-soon-badge">Coming Soon</div>
+          <div class="play-btn" id="play-btn" title="Audio coming soon">
+            <div class="play-icon"></div>
+          </div>
+          <div class="audio-label">Sample Greeting Recording</div>
+          <div class="audio-bar"><div class="audio-progress" id="audio-progress"></div></div>
+          <div class="audio-times"><span>0:00</span><span id="audio-time">0:00</span></div>
+          <div class="audio-caption">A real voice recording will be available here soon. You will hear exactly what your callers hear when they call your business after hours or when your team is unavailable.</div>
+        </div>
+      </div>
+      <div class="phone-home"></div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:0 40px 80px;">
+  <p style="font-size:14px;color:var(--muted);max-width:440px;margin:0 auto 24px;line-height:1.7;">Want to see the full dashboard? Explore how calls, bookings, and follow-ups are tracked in one place.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <a href="demo-manager.html" style="padding:12px 24px;background:var(--navy);color:#fff;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;">View Manager Demo</a>
+    <a href="sms-preview.html" style="padding:12px 24px;background:var(--white);color:var(--navy);border:2px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;">See SMS Preview &#8594;</a>
+  </div>
+</div>
+
+<footer><p>&copy; 2026 <span>Aligned Impact</span> &bull; Client Service Platform</p></footer>
+
+<script>
+document.getElementById('play-btn').addEventListener('click', function() {
+  // Placeholder — will be replaced with real audio when file is provided
+  alert('Audio recording coming soon. Check back shortly.');
+});
+</script>
+</body>
+</html>

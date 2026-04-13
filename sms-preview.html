@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMS & Follow-Up Preview | Aligned Impact</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1b4f8a;--orange:#f5a623;--cream:#faf8f4;--white:#ffffff;--border:#ddd8ce;--muted:#6b6659;--text:#1a1a1a;--green:#1b7a4a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Outfit",sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{font-family:"Fraunces",serif;font-size:20px;font-weight:600;color:var(--navy);}
+.nav-brand span{font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--orange);display:block;margin-top:1px;}
+.back-link{font-size:13px;color:var(--navy);text-decoration:none;display:flex;align-items:center;gap:6px;}
+.back-link:hover{text-decoration:underline;}
+.hero{text-align:center;padding:60px 40px 40px;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--orange);margin-bottom:12px;}
+h1{font-family:"Fraunces",serif;font-size:clamp(26px,4vw,40px);font-weight:700;color:var(--navy);margin-bottom:14px;max-width:600px;margin-left:auto;margin-right:auto;}
+.hero-sub{font-size:16px;color:var(--muted);max-width:480px;margin:0 auto 48px;line-height:1.7;}
+
+/* Phone */
+.phone-section{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:60px;padding:0 40px;}
+.phone-col{display:flex;flex-direction:column;align-items:center;gap:16px;}
+.phone-col-label{font-size:13px;font-weight:600;color:var(--navy);text-align:center;}
+.phone-col-sub{font-size:12px;color:var(--muted);text-align:center;max-width:200px;line-height:1.5;}
+.phone{width:260px;background:#1a1a2e;border-radius:40px;padding:10px;box-shadow:0 24px 80px rgba(27,79,138,0.2);}
+.phone-notch{width:90px;height:22px;background:#1a1a2e;border-radius:0 0 14px 14px;margin:0 auto 10px;position:relative;}
+.phone-notch::before{content:'';position:absolute;left:50%;transform:translateX(-50%);top:5px;width:32px;height:11px;background:#0d0d1a;border-radius:6px;}
+.phone-screen{background:#f5f5f5;border-radius:30px;overflow:hidden;min-height:460px;display:flex;flex-direction:column;}
+.phone-top-bar{background:var(--white);padding:10px 14px;text-align:center;border-bottom:1px solid #e5e5e5;}
+.phone-contact{font-size:13px;font-weight:600;color:#1a1a1a;}
+.phone-contact-sub{font-size:10px;color:#888;margin-top:1px;}
+.messages{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+.msg{max-width:82%;padding:9px 13px;border-radius:18px;font-size:12px;line-height:1.5;}
+.msg-in{background:var(--white);color:#1a1a1a;border-radius:18px 18px 18px 4px;align-self:flex-start;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.msg-out{background:#1b4f8a;color:#fff;border-radius:18px 18px 4px 18px;align-self:flex-end;}
+.msg-out.green{background:#34c759;}
+.msg-time{font-size:9px;color:#aaa;margin-top:2px;display:block;}
+.msg-time.out{text-align:right;color:rgba(255,255,255,.6);}
+.phone-input{background:var(--white);padding:8px 12px;display:flex;align-items:center;gap:8px;border-top:1px solid #e5e5e5;}
+.phone-input-field{flex:1;background:#f0f0f0;border-radius:20px;padding:7px 14px;font-size:11px;color:#aaa;}
+.phone-send-btn{width:30px;height:30px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.phone-send-btn::after{content:'↑';color:#fff;font-size:14px;font-weight:600;}
+.phone-home{width:32px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:8px auto 2px;}
+
+/* Scenario tabs */
+.scenario-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;padding:0 40px;}
+.scenario-tab{padding:8px 18px;border-radius:8px;font-family:"Outfit",sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--white);color:var(--muted);transition:all .15s;}
+.scenario-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+footer{background:var(--navy);padding:24px 40px;text-align:center;}
+footer p{font-size:13px;color:rgba(255,255,255,.5);}
+footer span{color:var(--orange);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Aligned Impact <span>Client Service Platform</span></div>
+  <a href="index.html" class="back-link">&#8592; Back to home</a>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">SMS &amp; Follow-Up</div>
+  <h1>See the texts your clients receive.</h1>
+  <p class="hero-sub">From booking confirmations to review requests, every message is automatic — sent at the right moment without you lifting a finger.</p>
+</div>
+
+<div class="scenario-tabs">
+  <button class="scenario-tab active" onclick="showScenario('booking')">Booking Confirmation</button>
+  <button class="scenario-tab" onclick="showScenario('noshow')">No-Show Follow-Up</button>
+  <button class="scenario-tab" onclick="showScenario('review')">Review Request</button>
+  <button class="scenario-tab" onclick="showScenario('intake')">Intake Question</button>
+</div>
+
+<div class="phone-section">
+  <div class="phone-col">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-top-bar">
+          <div class="phone-contact">Harrison and Cole LLP</div>
+          <div class="phone-contact-sub">+1 (404) 555-0100</div>
+        </div>
+        <div class="messages" id="messages-wrap">
+          <!-- Injected by JS -->
+        </div>
+        <div class="phone-input">
+          <div class="phone-input-field">Message</div>
+          <div class="phone-send-btn"></div>
+        </div>
+      </div>
+      <div class="phone-home"></div>
+    </div>
+    <div class="phone-col-label" id="scenario-label">Booking Confirmation</div>
+    <div class="phone-col-sub" id="scenario-sub">Sent automatically after a consultation is scheduled.</div>
+  </div>
+</div>
+
+<div style="text-align:center;padding:0 40px 80px;">
+  <p style="font-size:14px;color:var(--muted);max-width:440px;margin:0 auto 24px;line-height:1.7;">All messages include an automatic opt-out so clients can always reply STOP. Want to see how these are managed in the dashboard?</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <a href="demo-manager.html" style="padding:12px 24px;background:var(--navy);color:#fff;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;">View Manager Demo</a>
+    <a href="call-experience.html" style="padding:12px 24px;background:var(--white);color:var(--navy);border:2px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;">&#127911; Hear the Call</a>
+  </div>
+</div>
+
+<footer><p>&copy; 2026 <span>Aligned Impact</span> &bull; Client Service Platform</p></footer>
+
+<script>
+var SCENARIOS = {
+  booking: {
+    label: 'Booking Confirmation',
+    sub: 'Sent automatically after a consultation is scheduled.',
+    messages: [
+      {type:'out', text:'Hi Sarah! Your consultation with Harrison and Cole LLP is confirmed for Tuesday, April 15 at 3:00 PM. Reply STOP to opt out.', time:'Today 11:43 AM'},
+      {type:'in', text:'Thank you! See you then.', time:'Today 11:46 AM'},
+      {type:'out', text:'Looking forward to speaking with you. A reminder will be sent the morning of your appointment.', time:'Today 11:46 AM'}
+    ]
+  },
+  noshow: {
+    label: 'No-Show Follow-Up',
+    sub: 'Sent automatically when a client misses their scheduled appointment.',
+    messages: [
+      {type:'out', text:'Hi Marcus, we missed you at your 2:00 PM consultation today. Would you like to reschedule? Reply YES for a booking link or STOP to opt out.', time:'Today 2:15 PM'},
+      {type:'in', text:'YES', time:'Today 2:22 PM'},
+      {type:'out', text:'Here is your booking link to find a new time: calendly.com/harrisonandcole — We look forward to speaking with you.', time:'Today 2:22 PM'},
+      {type:'in', text:'Booked for Thursday at 10am, thanks!', time:'Today 2:25 PM'}
+    ]
+  },
+  review: {
+    label: 'Review Request',
+    sub: 'Sent after a consultation is completed. Triggered from the client record.',
+    messages: [
+      {type:'out', text:'Hi Linda, thank you for speaking with Harrison and Cole today. Were you satisfied with your consultation? Reply YES to leave a quick review or NO to share feedback with our team. Reply STOP to opt out.', time:'Today 4:30 PM'},
+      {type:'in', text:'YES', time:'Today 4:35 PM'},
+      {type:'out', text:'Thank you Linda! We appreciate your kind words. Here is the link to leave your Google review: g.page/harrisonandcole/review', time:'Today 4:35 PM', cls:'green'}
+    ]
+  },
+  intake: {
+    label: 'Intake Question',
+    sub: 'Sent during the call to capture additional details automatically.',
+    messages: [
+      {type:'out', text:'Hi there, thank you for calling Harrison and Cole. What type of legal matter are you calling about today?', time:'Today 10:14 AM'},
+      {type:'in', text:'I was in a car accident and want to talk to someone about my options.', time:'Today 10:14 AM'},
+      {type:'out', text:"I'm sorry to hear that. Can I get your name and the best number to reach you?", time:'Today 10:15 AM'},
+      {type:'in', text:'Marcus Webb, 404-555-0182.', time:'Today 10:15 AM'},
+      {type:'out', text:"Thank you Marcus. I've captured your information and will have someone from our team reach out within one business day. Would you like to schedule a free consultation?", time:'Today 10:15 AM'}
+    ]
+  }
+};
+
+function showScenario(key) {
+  var s = SCENARIOS[key];
+  document.getElementById('scenario-label').textContent = s.label;
+  document.getElementById('scenario-sub').textContent = s.sub;
+
+  var wrap = document.getElementById('messages-wrap');
+  wrap.innerHTML = '';
+  s.messages.forEach(function(m, i) {
+    setTimeout(function() {
+      var div = document.createElement('div');
+      div.innerHTML = '<div class="msg msg-' + m.type + (m.cls ? ' ' + m.cls : '') + '">' + m.text + '<span class="msg-time' + (m.type === 'out' ? ' out' : '') + '">' + m.time + '</span></div>';
+      wrap.appendChild(div.firstChild);
+      wrap.scrollTop = wrap.scrollHeight;
+    }, i * 150);
+  });
+
+  document.querySelectorAll('.scenario-tab').forEach(function(t){ t.classList.remove('active'); });
+  event.target.classList.add('active');
+}
+
+// Load default
+showScenario('booking');
+document.querySelector('.scenario-tab').classList.add('active');
+</script>
+</body>
+</html>
