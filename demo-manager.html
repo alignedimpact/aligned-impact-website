@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Manager Dashboard Demo | Aligned Impact</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1b4f8a;--orange:#f5a623;--sky:#29a8e0;--cream:#faf8f4;
+  --cream2:#f0ede7;--text:#1a1a1a;--muted:#6b6659;--border:#ddd8ce;
+  --white:#ffffff;--green:#1b7a4a;--green-bg:#f0fff4;--red:#c0392b;
+  --red-bg:#fff5f5;--warning:#d69e2e;--sidebar-w:260px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Outfit",sans-serif;font-size:15px;line-height:1.6;background:var(--cream);color:var(--text);display:flex;min-height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto;}
+.sidebar-brand{padding:20px;border-bottom:1px solid rgba(255,255,255,.1);}
+.brand-name{font-family:"Fraunces",serif;font-size:20px;font-weight:600;color:#fff;}
+.brand-sub{font-size:11px;color:var(--orange);font-weight:500;letter-spacing:.8px;text-transform:uppercase;margin-top:2px;}
+.tenant-name{font-size:13px;color:rgba(255,255,255,.6);margin-top:6px;}
+.sidebar-nav{flex:1;padding:12px 0;}
+.nav-section{padding:8px 20px 4px;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.65);cursor:pointer;transition:all .15s;font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:"Outfit",sans-serif;}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:rgba(245,166,35,.15);color:var(--orange);}
+.nav-icon{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.nav-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;font-size:10px;font-weight:700;margin-left:auto;}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1);}
+.user-info{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.user-avatar{width:32px;height:32px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0;}
+.user-email{font-size:12px;color:rgba(255,255,255,.6);}
+.user-role{font-size:11px;color:rgba(255,255,255,.4);}
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.demo-banner{background:linear-gradient(135deg,rgba(245,166,35,.15),rgba(245,166,35,.08));border-bottom:2px solid rgba(245,166,35,.4);padding:10px 28px;font-size:12px;color:#8a5a00;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.demo-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;display:inline-block;margin-right:6px;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:"Fraunces",serif;font-size:20px;font-weight:600;color:var(--navy);}
+.content{padding:28px;flex:1;}
+.view{display:none;}
+.view.active{display:block;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px;border-top:3px solid transparent;}
+.stat-card.c-navy{border-top-color:var(--navy);}
+.stat-card.c-green{border-top-color:var(--green);}
+.stat-card.c-orange{border-top-color:var(--orange);}
+.stat-card.c-sky{border-top-color:var(--sky);}
+.stat-card.c-gold{border-top-color:#d4920a;}
+.stat-card.c-red{border-top-color:var(--red);}
+.stat-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.stat-value{font-family:"Fraunces",serif;font-size:28px;font-weight:600;color:var(--navy);line-height:1;}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.card-title{font-family:"Fraunces",serif;font-size:17px;font-weight:600;color:var(--navy);}
+.btn{padding:8px 18px;border-radius:8px;font-family:"Outfit",sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:#163f6e;}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--navy);color:var(--navy);}
+.btn-sky{background:rgba(41,168,224,.1);color:#0d5f80;border:1px solid rgba(41,168,224,.2);}
+.btn-danger{background:#fdf0ef;color:var(--red);border:1.5px solid #f5c6c2;}
+.btn-success{background:#edf7f1;color:var(--green);border:1.5px solid #b8e0c8;}
+.btn-warning{background:#fffbeb;color:#8a5a00;border:1px solid #fbd38d;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);background:var(--cream);}
+td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(250,248,244,.6);}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.pill-green{background:#edf7f1;color:var(--green);}
+.pill-blue{background:rgba(41,168,224,.1);color:#0d5f80;}
+.pill-orange{background:rgba(245,166,35,.12);color:#8a5a00;}
+.pill-red{background:#fdf0ef;color:var(--red);}
+.pill-gray{background:var(--cream2);color:var(--muted);}
+.pill-navy{background:rgba(27,79,138,.08);color:var(--navy);}
+.pipeline-wrap{display:grid;grid-template-columns:repeat(9,1fr);gap:10px;overflow-x:auto;padding-bottom:8px;}
+.pipeline-col{background:var(--cream);border-radius:10px;padding:12px;}
+.pipeline-col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.pipeline-count{background:var(--white);border-radius:10px;padding:2px 7px;font-size:11px;font-weight:600;color:var(--navy);}
+.lead-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
+.lead-card:hover{border-color:var(--sky);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.lead-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.lead-meta{font-size:11px;color:var(--muted);}
+.time-tab{background:none;border:none;padding:6px 14px;border-radius:7px;font-family:"Outfit",sans-serif;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s;}
+.time-tab.active{background:var(--white);color:var(--navy);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.alert-banner{background:#fdf0ef;border:1px solid #f5c6c2;border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--red);}
+.btn-link-inline{background:none;border:none;cursor:pointer;color:var(--navy);text-decoration:underline;font-size:13px;font-family:"Outfit",sans-serif;padding:0;margin-left:6px;}
+.no-show-btn{background:#fff8e6;color:#8a5a00;border:1px solid #fbd38d;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;}
+.source-list{display:flex;flex-direction:column;gap:12px;}
+.source-row{display:flex;align-items:center;gap:12px;}
+.source-name{width:130px;font-size:13px;font-weight:500;flex-shrink:0;}
+.source-bar-wrap{flex:1;background:var(--cream2);border-radius:4px;height:8px;overflow:hidden;}
+.source-bar{height:100%;border-radius:4px;background:var(--navy);}
+.source-pct{width:36px;text-align:right;font-size:13px;font-weight:600;color:var(--navy);}
+.score-ring{position:relative;width:80px;height:80px;flex-shrink:0;}
+.score-ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:6;}
+.ring-fill{fill:none;stroke-width:6;stroke-linecap:round;}
+.ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-value{font-family:"Fraunces",serif;font-size:18px;font-weight:700;line-height:1;}
+.ring-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.score-grade{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-size:14px;font-weight:700;}
+.grade-a{background:#f0fff4;color:#276749;}
+.grade-b{background:rgba(41,168,224,0.1);color:#0d5f80;}
+.grade-c{background:#fffbeb;color:#7b341e;}
+.score-metric-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.score-metric-row:last-child{border-bottom:none;}
+.score-metric-label{flex:1;font-size:13px;}
+.score-metric-bar{width:120px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.score-metric-fill{height:100%;border-radius:3px;}
+.score-metric-val{width:40px;text-align:right;font-size:13px;font-weight:600;color:var(--navy);flex-shrink:0;}
+.task-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.task-row:last-child{border-bottom:none;}
+.task-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.task-check.done{background:var(--navy);border-color:var(--navy);color:white;}
+.task-check.in-prog{background:#fff8e6;border-color:var(--warning);color:var(--warning);}
+.task-text{flex:1;font-size:13px;}
+.task-text.done{text-decoration:line-through;color:var(--muted);}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.coming-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;}
+.coming-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.coming-card-title{font-size:14px;font-weight:700;color:var(--navy);}
+.coming-card-desc{font-size:12px;color:var(--muted);line-height:1.6;flex:1;}
+.badge-coming{background:#fff8e6;color:#8a5a00;border:1px solid #fbd38d;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.badge-testing{background:rgba(41,168,224,.1);color:var(--sky);border:1px solid rgba(41,168,224,.3);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.feedback-btn-demo{background:none;border:1px solid var(--border);color:var(--navy);padding:5px 12px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:"Outfit",sans-serif;}
+.feedback-btn-demo:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.iq-row{display:flex;align-items:center;gap:8px;padding:8px;background:var(--cream);border-radius:8px;margin-bottom:8px;}
+.iq-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.iq-badge.req{background:rgba(229,62,62,0.1);color:var(--red);}
+.iq-badge.opt{background:rgba(41,168,224,0.1);color:#0d5f80;}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:12px;cursor:pointer;transition:background .2s;}
+.toggle input:checked + .toggle-track{background:var(--navy);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle input:checked ~ .toggle-thumb{transform:translateX(20px);}
+.client-detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:none;align-items:flex-start;justify-content:flex-end;}
+.client-detail-overlay.open{display:flex;}
+.client-detail-panel{background:var(--white);width:100%;max-width:520px;height:100vh;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.15);animation:slideIn .25s ease;}
+@keyframes slideIn{from{transform:translateX(100%);}to{transform:none;}}
+.client-detail-header{background:var(--navy);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;}
+.client-detail-header h3{font-family:"Fraunces",serif;font-size:18px;font-weight:600;color:white;}
+.client-detail-close{background:none;border:none;color:rgba(255,255,255,0.6);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;}
+.client-detail-close:hover{color:white;}
+.client-detail-body{padding:20px 24px;}
+.detail-section{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.detail-section:last-child{border-bottom:none;}
+.detail-section-title{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;}
+.detail-row .key{color:var(--muted);}
+.detail-row .val{font-weight:500;}
+.msg-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.msg-item:last-child{border-bottom:none;}
+.msg-author{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:3px;}
+.msg-content{font-size:13px;color:var(--text);line-height:1.5;}
+.msg-time{font-size:11px;color:var(--muted);margin-top:3px;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+/* ─── MOBILE ─────────────────────────────────────────────────────────── */
+    @media(max-width:768px){
+      /* Sidebar becomes drawer */
+      .sidebar{transform:translateX(-100%);transition:transform .25s ease;z-index:200;}
+      .sidebar.open{transform:translateX(0);}
+      .sidebar-overlay{display:block;}
+      .sidebar-overlay.visible{opacity:1;pointer-events:all;}
+      /* Main fills screen */
+      .main{margin-left:0;}
+      /* Topbar gets hamburger */
+      .hamburger{display:flex;}
+      /* Stats 2 columns */
+      .stats-grid{grid-template-columns:repeat(2,1fr);}
+      /* Overview grid single column */
+      .overview-grid{grid-template-columns:1fr !important;}
+      /* Pipeline stacks single column list */
+      .pipeline-wrap{display:flex;flex-direction:column;gap:8px;}
+      .pipeline-col{background:var(--cream);border-radius:10px;padding:12px;}
+      /* Tables scroll */
+      table{min-width:480px;}
+      .table-wrap,.card{overflow-x:auto;}
+      /* Cards full width padding */
+      .card{padding:16px;}
+      .content{padding:16px;}
+      /* Prevent iOS zoom on inputs */
+      input,select,textarea{font-size:16px !important;}
+      /* Score ring grid */
+      #view-scorecard [style*="grid-template-columns:auto 1fr"]{grid-template-columns:1fr !important;}
+      #view-scorecard [style*="display:grid;grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr) !important;}
+      .scorecard-summary-grid{grid-template-columns:1fr !important;gap:14px;}
+      .scorecard-summary-grid > div:first-child{padding-right:0 !important;border-right:none !important;border-bottom:1px solid var(--border);padding-bottom:14px;}
+      /* Report FAB smaller */
+      .report-fab{bottom:16px;right:16px;padding:8px 14px;font-size:12px;}
+      /* Topbar title shorter */
+      .topbar-title{font-size:16px;}
+      /* AVA status text hidden, dot shown */
+      .ava-status-text{display:none;}
+      /* Demo banner wraps */
+      .demo-banner{padding:8px 16px;gap:6px;}
+    }
+    @media(max-width:400px){
+      .stats-grid{grid-template-columns:1fr 1fr;}
+      .urgency-pills{gap:6px;}
+      .urgency-pill{padding:5px 10px;font-size:11px;}
+    }
+    /* Sidebar overlay backdrop */
+    .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199;display:block;opacity:0;pointer-events:none;transition:opacity .25s;}
+    /* Hamburger — hidden on desktop */
+    .hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px;}
+    .hamburger span{display:block;width:20px;height:2px;background:var(--navy);border-radius:2px;transition:all .2s;}
+
+    .report-fab{position:fixed;bottom:24px;right:24px;z-index:200;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-family:"Outfit",sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(27,79,138,.35);transition:all .15s;}
+    .report-fab:hover{background:#163f6e;transform:translateY(-2px);box-shadow:0 6px 20px rgba(27,79,138,.4);}
+    .report-fab .fab-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;animation:pulse 2s infinite;}
+    .report-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;}
+    .report-modal-overlay.open{display:flex;}
+    .report-modal{background:var(--white);border-radius:14px;padding:28px;width:100%;max-width:480px;box-shadow:0 8px 32px rgba(0,0,0,.18);animation:fadeUp .2s ease;}
+    .report-modal h3{font-family:"Fraunces",serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+    .report-modal p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;}
+    .report-field{margin-bottom:14px;}
+    .report-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;}
+    .report-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:"Outfit",sans-serif;outline:none;transition:border-color .15s;}
+    .report-input:focus{border-color:var(--navy);}
+    .urgency-pills{display:flex;gap:8px;flex-wrap:wrap;}
+    .urgency-pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--cream);color:var(--muted);transition:all .15s;}
+    .urgency-pill.sel-low{border-color:var(--green);background:#edf7f1;color:var(--green);}
+    .urgency-pill.sel-medium{border-color:var(--sky);background:rgba(41,168,224,.1);color:#0d5f80;}
+    .urgency-pill.sel-high{border-color:var(--orange);background:rgba(245,166,35,.12);color:#8a5a00;}
+    .urgency-pill.sel-urgent{border-color:var(--red);background:#fdf0ef;color:var(--red);}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">Aligned Impact</div>
+    <div class="brand-sub">Client Dashboard</div>
+    <div class="tenant-name">Harrison and Cole LLP</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Overview</div>
+    <button class="nav-item active" data-view="view-overview"><span class="nav-icon">&#9632;</span> Dashboard</button>
+    <div class="nav-section">Performance</div>
+    <button class="nav-item" data-view="view-scorecard"><span class="nav-icon">&#127942;</span> Call Quality</button>
+    <div class="nav-section">Leads</div>
+    <button class="nav-item" data-view="view-pipeline"><span class="nav-icon">&#9644;</span> Pipeline</button>
+    <div class="nav-section">Calls</div>
+    <button class="nav-item" data-view="view-calls"><span class="nav-icon">&#9742;</span> Call Log</button>
+    <button class="nav-item" data-view="view-transcripts"><span class="nav-icon">&#9998;</span> Transcripts</button>
+    <button class="nav-item" data-view="view-escalations"><span class="nav-icon">&#9888;</span> Escalations<span class="nav-badge" style="background:var(--red);color:#fff;">1</span></button>
+    <div class="nav-section">Scheduling</div>
+    <button class="nav-item" data-view="view-bookings"><span class="nav-icon">&#128197;</span> Bookings</button>
+    <button class="nav-item" data-view="view-noshow"><span class="nav-icon">&#9888;</span> No-Show Queue<span class="nav-badge" style="background:var(--orange);color:#fff;">2</span></button>
+    <div class="nav-section">Marketing</div>
+    <button class="nav-item" data-view="view-sources"><span class="nav-icon">&#9685;</span> Source Tracking</button>
+    <button class="nav-item" data-view="view-volume"><span class="nav-icon">&#128200;</span> Call Volume</button>
+    <button class="nav-item" data-view="view-outreach"><span class="nav-icon">&#128140;</span> Client Outreach</button>
+    <div class="nav-section">Automation</div>
+    <button class="nav-item" data-view="view-sms"><span class="nav-icon">&#128172;</span> SMS Automation</button>
+    <button class="nav-item" data-view="view-sms-queue"><span class="nav-icon">&#128172;</span> SMS Queue</button>
+    <div class="nav-section">Team</div>
+    <button class="nav-item" data-view="view-tasks"><span class="nav-icon">&#9989;</span> Tasks<span class="nav-badge" style="background:var(--orange);color:#fff;">3</span></button>
+    <button class="nav-item" data-view="view-messages"><span class="nav-icon">&#128172;</span> Team Messages<span class="nav-badge" style="background:var(--orange);color:#fff;">1</span></button>
+    <div class="nav-section">Settings</div>
+    <button class="nav-item" data-view="view-intake"><span class="nav-icon">&#9999;</span> Intake Questions</button>
+    <button class="nav-item" data-view="view-hours"><span class="nav-icon">&#128336;</span> Business Hours</button>
+    <button class="nav-item" data-view="view-ava"><span class="nav-icon">&#129302;</span> AVA Settings</button>
+    <button class="nav-item" data-view="view-staff"><span class="nav-icon">&#128101;</span> Staff</button>
+    <button class="nav-item" data-view="view-coming"><span class="nav-icon">&#128640;</span> What's Coming</button>
+  </nav>
+  <div class="sidebar-footer">
+      <button onclick="openReportModal()" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);padding:8px 14px;border-radius:8px;font-family:Outfit,sans-serif;font-size:12px;font-weight:500;cursor:pointer;width:100%;margin-bottom:12px;transition:all .15s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+        <span style="font-size:14px;">&#128172;</span> Report an Issue
+      </button>
+    <div class="user-info">
+      <div class="user-avatar">J</div>
+      <div>
+        <div class="user-email">james@harrisonandcole.com</div>
+        <div class="user-role">Manager</div>
+      </div>
+    </div>
+    <a href="../index.html" style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.4);font-size:12px;text-decoration:none;">&#8592; Back to site</a>
+  </div>
+</aside>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileNav()"></div>
+
+<main class="main">
+  <div class="demo-banner">
+    <div style="display:flex;align-items:center;gap:6px;font-weight:600;"><div class="demo-dot"></div>Demo Mode — Harrison and Cole LLP &nbsp;·&nbsp; Personal Injury Law Firm, Atlanta GA</div>
+    <div style="font-size:12px;color:var(--muted);">All data is simulated &nbsp;·&nbsp; <a href="../index.html" style="color:var(--navy);font-weight:600;">Learn more &#8594;</a></div>
+  </div>
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()" aria-label="Open navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;background:rgba(27,122,74,0.1);border:1px solid rgba(27,122,74,0.25);">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;"></div>
+        <span class="ava-status-text" style="font-size:12px;font-weight:600;color:var(--green);">AVA Active</span>
+      </div>
+      <span class="ava-status-text" style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;">Harrison and Cole LLP</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="view active" id="view-overview">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:13px;color:var(--muted);" id="overview-label">This Week — Apr 14–20, 2026</div>
+        <div style="display:flex;gap:4px;background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:3px;">
+          <button class="time-tab" data-range="today" onclick="setRange('today')">Today</button>
+          <button class="time-tab active" data-range="week" onclick="setRange('week')">This Week</button>
+          <button class="time-tab" data-range="month" onclick="setRange('month')">This Month</button>
+        </div>
+      </div>
+
+      <!-- Business Insights -->
+      <div style="background:linear-gradient(135deg,var(--navy) 0%,#2563a8 100%);border-radius:14px;padding:22px 24px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:18px;">&#129504;</span>
+              <div style="font-family:Fraunces,serif;font-size:16px;font-weight:600;">Business Insights</div>
+              <span style="background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;" id="insights-label">This Week</span>
+            </div>
+            <div style="font-size:13px;line-height:1.9;color:rgba(255,255,255,0.9);" id="insights-body">
+              <div style="margin-bottom:6px;">&#128222; <strong>34 calls</strong> this week. Answer rate: <strong>87%</strong> — 4 missed on Friday afternoon.</div>
+              <div style="margin-bottom:6px;">&#128337; Busiest window: <strong>10am–12pm</strong> Tue–Thu. Make sure your team has coverage during these hours.</div>
+              <div style="margin-bottom:6px;">&#128269; Top lead source: <strong>Google</strong> (42% of calls). Your Google presence is working well.</div>
+              <div style="margin-bottom:6px;">&#128197; <strong>6 upcoming appointments</strong>, 2 completed. No-show rate: <strong>14%</strong> — within normal range.</div>
+              <div>&#128680; <strong>Action needed:</strong> 1 unresolved escalation — a caller mentioned hospitalization. Review and call back when ready.</div>
+            </div>
+          </div>
+          <button class="btn btn-sm" onclick="toast('Insights refreshed!')" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25);font-size:12px;">&#8635; Refresh</button>
+        </div>
+      </div>
+
+      <div class="alert-banner"><span style="font-size:16px;">&#9888;</span>1 escalated call needs your attention. <button class="btn-link-inline" onclick="switchView('view-escalations')">View</button></div>
+      <div class="alert-banner" style="margin-bottom:20px;"><span style="font-size:16px;">&#128197;</span>2 no-shows without a follow-up SMS. <button class="btn-link-inline" onclick="switchView('view-noshow')">View</button></div>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card c-green"><div class="stat-label">Answer Rate</div><div class="stat-value" id="stat-rate">87%</div><div class="stat-sub" id="stat-rate-sub">30 of 34 answered</div></div>
+        <div class="stat-card c-orange"><div class="stat-label">New Clients</div><div class="stat-value" id="stat-leads">8</div><div class="stat-sub">Captured this period</div></div>
+        <div class="stat-card c-sky"><div class="stat-label">Upcoming Bookings</div><div class="stat-value" id="stat-bookings">6</div><div class="stat-sub" id="stat-bookings-sub">1 no-show this week</div></div>
+        <div class="stat-card c-navy"><div class="stat-label">Completion Rate</div><div class="stat-value" id="stat-completion">82%</div><div class="stat-sub">9 of 11 completed</div></div>
+        <div class="stat-card c-gold"><div class="stat-label">Reviews Sent</div><div class="stat-value" id="stat-reviews">7</div><div class="stat-sub" id="stat-reviews-sub">5 positive responses</div></div>
+        <div class="stat-card c-gold"><div class="stat-label">Missed Calls</div><div class="stat-value" id="stat-missed">4</div><div class="stat-sub">of 34 total</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;" class="overview-grid">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Clients</div><button class="btn btn-outline btn-sm" onclick="switchView('view-pipeline')">View All</button></div>
+          <table><thead><tr><th>Name</th><th>Case Type</th><th>Stage</th><th>Date</th></tr></thead><tbody>
+            <tr><td><strong style="color:var(--navy);cursor:pointer;" onclick="openDetail()">Marcus Thompson</strong></td><td>Auto Accident</td><td><span class="pill pill-blue">New Lead</span></td><td>Apr 19</td></tr>
+            <tr><td><strong style="color:var(--navy);cursor:pointer;" onclick="openDetail()">Jennifer Liu</strong></td><td>Slip and Fall</td><td><span class="pill pill-green">Consult Scheduled</span></td><td>Apr 18</td></tr>
+            <tr><td><strong style="color:var(--navy);cursor:pointer;" onclick="openDetail()">David Rodriguez</strong></td><td>Workplace Injury</td><td><span class="pill pill-navy">Intake Complete</span></td><td>Apr 17</td></tr>
+            <tr><td><strong style="color:var(--navy);cursor:pointer;" onclick="openDetail()">Tamara Wilson</strong></td><td>Auto Accident</td><td><span class="pill pill-orange">Decision Ready</span></td><td>Apr 16</td></tr>
+            <tr><td><strong style="color:var(--navy);cursor:pointer;" onclick="openDetail()">Robert Chen</strong></td><td>Premises Liability</td><td><span class="pill pill-green">Accepted</span></td><td>Apr 15</td></tr>
+          </tbody></table>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Upcoming Bookings</div><button class="btn btn-outline btn-sm" onclick="switchView('view-bookings')">View All</button></div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">Marcus Thompson</div><div style="font-size:11px;color:var(--muted);">Sarah Mitchell</div></div><div style="text-align:right;"><div style="font-size:12px;">Apr 21</div><div style="font-size:11px;color:var(--muted);">10:00 AM</div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">Jennifer Liu</div><div style="font-size:11px;color:var(--muted);">James Harrison</div></div><div style="text-align:right;"><div style="font-size:12px;">Apr 21</div><div style="font-size:11px;color:var(--muted);">2:00 PM</div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);"><div><div style="font-size:13px;font-weight:600;">Patricia Moore</div><div style="font-size:11px;color:var(--muted);">Sarah Mitchell</div></div><div style="text-align:right;"><div style="font-size:12px;">Apr 22</div><div style="font-size:11px;color:var(--muted);">11:30 AM</div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;"><div><div style="font-size:13px;font-weight:600;">Kevin James</div><div style="font-size:11px;color:var(--muted);">Marcus Webb</div></div><div style="text-align:right;"><div style="font-size:12px;">Apr 23</div><div style="font-size:11px;color:var(--muted);">3:00 PM</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Recent Calls</div><button class="btn btn-outline btn-sm" onclick="switchView('view-calls')">View All</button></div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Caller</th><th>Phone</th><th>Time</th><th>Duration</th><th>Source</th><th>Outcome</th></tr></thead><tbody>
+          <tr><td><strong>Marcus Thompson</strong></td><td>(404) 555-0211</td><td>Apr 19, 10:14 AM</td><td>4m 32s</td><td>Google</td><td><span class="pill pill-green">Lead Captured</span></td></tr>
+          <tr><td><strong>Anonymous</strong></td><td>(678) 555-0334</td><td>Apr 19, 9:02 AM</td><td>1m 12s</td><td>Unknown</td><td><span class="pill pill-gray">Voicemail</span></td></tr>
+          <tr><td><strong>Jennifer Liu</strong></td><td>(770) 555-0198</td><td>Apr 18, 2:45 PM</td><td>6m 18s</td><td>Referral</td><td><span class="pill pill-green">Appt Booked</span></td></tr>
+          <tr><td><strong>Thomas Bell</strong></td><td>(678) 555-0567</td><td>Apr 17, 3:15 PM</td><td>8m 41s</td><td>Google</td><td><span class="pill pill-red">Escalated</span></td></tr>
+          <tr><td><strong>Tamara Wilson</strong></td><td>(404) 555-0312</td><td>Apr 16, 1:00 PM</td><td>5m 12s</td><td>Facebook</td><td><span class="pill pill-green">Lead Captured</span></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+
+    <!-- SCORECARD -->
+    <div class="view" id="view-scorecard">
+      <div style="display:flex;gap:4px;background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:3px;width:fit-content;margin-bottom:20px;">
+        <button class="time-tab active" onclick="loadScorecard('week',this)">This Week</button>
+        <button class="time-tab" onclick="loadScorecard('month',this)">This Month</button>
+        <button class="time-tab" onclick="loadScorecard('all',this)">All Time</button>
+      </div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:20px;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;align-items:center;" class="scorecard-summary-grid">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding-right:24px;border-right:1px solid var(--border);">
+          <div class="score-ring"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="34"/><circle class="ring-fill" cx="40" cy="40" r="34" stroke="#1b7a4a" stroke-dasharray="213.6" stroke-dashoffset="34"/></svg><div class="ring-label"><div class="ring-value" style="color:var(--green);">84</div><div class="ring-sub">/ 100</div></div></div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);">Overall Score</div>
+          <div class="score-grade grade-b">B</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+          <div style="text-align:center;padding:14px;background:var(--cream);border-radius:10px;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--green);">91%</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Intake Completion</div></div>
+          <div style="text-align:center;padding:14px;background:var(--cream);border-radius:10px;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--sky);">78%</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Booking Conversion</div></div>
+          <div style="text-align:center;padding:14px;background:var(--cream);border-radius:10px;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--green);">88%</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Escalation Accuracy</div></div>
+          <div style="text-align:center;padding:14px;background:var(--cream);border-radius:10px;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--navy);">34</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Calls Scored</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header"><div class="card-title">Score Breakdown</div></div>
+        <div>
+          <div class="score-metric-row"><div style="width:28px;"><div class="score-grade grade-a" style="width:28px;height:28px;font-size:11px;">A</div></div><div class="score-metric-label"><div style="font-weight:600;">Intake Completion</div><div style="font-size:11px;color:var(--muted);">Did AVA collect all required info? Weight: 35%</div></div><div class="score-metric-bar"><div class="score-metric-fill" style="width:91%;background:var(--green);"></div></div><div class="score-metric-val" style="color:var(--green);">91%</div></div>
+          <div class="score-metric-row"><div style="width:28px;"><div class="score-grade grade-b" style="width:28px;height:28px;font-size:11px;">B</div></div><div class="score-metric-label"><div style="font-weight:600;">Booking Conversion</div><div style="font-size:11px;color:var(--muted);">Did AVA book qualified callers? Weight: 30%</div></div><div class="score-metric-bar"><div class="score-metric-fill" style="width:78%;background:var(--sky);"></div></div><div class="score-metric-val" style="color:var(--sky);">78%</div></div>
+          <div class="score-metric-row"><div style="width:28px;"><div class="score-grade grade-a" style="width:28px;height:28px;font-size:11px;">A</div></div><div class="score-metric-label"><div style="font-weight:600;">Escalation Accuracy</div><div style="font-size:11px;color:var(--muted);">Did AVA correctly handle urgent situations? Weight: 20%</div></div><div class="score-metric-bar"><div class="score-metric-fill" style="width:88%;background:var(--green);"></div></div><div class="score-metric-val" style="color:var(--green);">88%</div></div>
+          <div class="score-metric-row"><div style="width:28px;"><div class="score-grade grade-b" style="width:28px;height:28px;font-size:11px;">B</div></div><div class="score-metric-label"><div style="font-weight:600;">Call Resolution</div><div style="font-size:11px;color:var(--muted);">Did calls end with a clear next step? Weight: 15%</div></div><div class="score-metric-bar"><div class="score-metric-fill" style="width:82%;background:var(--sky);"></div></div><div class="score-metric-val" style="color:var(--sky);">82%</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-header"><div class="card-title">Score Trend</div><span style="font-size:12px;color:var(--muted);">Weekly average — last 8 weeks</span></div>
+        <div style="display:flex;align-items:flex-end;gap:8px;height:120px;padding-bottom:24px;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;color:var(--muted);">76</div><div style="width:100%;background:var(--sky);border-radius:4px 4px 0 0;height:76px;opacity:.8;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;color:var(--muted);">79</div><div style="width:100%;background:var(--sky);border-radius:4px 4px 0 0;height:79px;opacity:.8;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;color:var(--muted);">75</div><div style="width:100%;background:var(--sky);border-radius:4px 4px 0 0;height:75px;opacity:.8;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;color:var(--muted);">80</div><div style="width:100%;background:var(--sky);border-radius:4px 4px 0 0;height:80px;opacity:.8;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;color:var(--muted);">82</div><div style="width:100%;background:var(--sky);border-radius:4px 4px 0 0;height:82px;opacity:.8;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;color:var(--muted);">83</div><div style="width:100%;background:var(--sky);border-radius:4px 4px 0 0;height:83px;opacity:.8;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;color:var(--muted);">81</div><div style="width:100%;background:var(--sky);border-radius:4px 4px 0 0;height:81px;opacity:.8;"></div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="font-size:10px;font-weight:700;color:var(--green);">84</div><div style="width:100%;background:var(--green);border-radius:4px 4px 0 0;height:84px;"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+          <span>Feb 24</span><span>Mar 3</span><span>Mar 10</span><span>Mar 17</span><span>Mar 24</span><span>Mar 31</span><span>Apr 7</span><span style="font-weight:600;color:var(--navy);">Apr 14</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Call-by-Call Scores</div></div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Caller</th><th>Date</th><th>Duration</th><th>Score</th><th>Grade</th><th>Intake</th><th>Booking</th><th>Escalation</th></tr></thead><tbody>
+          <tr><td><strong>Marcus Thompson</strong></td><td>Apr 19</td><td>4m 32s</td><td><strong style="color:var(--green);font-size:15px;">92</strong></td><td><div class="score-grade grade-a">A</div></td><td>100%</td><td>85%</td><td>—</td></tr>
+          <tr><td><strong>Jennifer Liu</strong></td><td>Apr 18</td><td>6m 18s</td><td><strong style="color:var(--green);font-size:15px;">88</strong></td><td><div class="score-grade grade-b">B</div></td><td>95%</td><td>90%</td><td>—</td></tr>
+          <tr><td><strong>Thomas Bell</strong></td><td>Apr 17</td><td>8m 41s</td><td><strong style="color:var(--sky);font-size:15px;">79</strong></td><td><div class="score-grade grade-b">B</div></td><td>88%</td><td>—</td><td>95%</td></tr>
+          <tr><td><strong>Tamara Wilson</strong></td><td>Apr 16</td><td>5m 12s</td><td><strong style="color:var(--sky);font-size:15px;">76</strong></td><td><div class="score-grade grade-b">B</div></td><td>78%</td><td>80%</td><td>—</td></tr>
+          <tr><td><strong>Unknown Caller</strong></td><td>Apr 15</td><td>2m 04s</td><td><strong style="color:var(--warning);font-size:15px;">61</strong></td><td><div class="score-grade grade-c">C</div></td><td>65%</td><td>60%</td><td>—</td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+
+    <!-- PIPELINE -->
+    <div class="view" id="view-pipeline">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" style="border-color:var(--navy);color:var(--navy);" onclick="filterPipelineView('active',this)">Active Leads</button>
+          <button class="btn btn-outline btn-sm" onclick="filterPipelineView('archived',this)">Archived</button>
+          <button class="btn btn-outline btn-sm" onclick="filterPipelineView('all',this)">All</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" placeholder="Search leads..." style="padding:6px 12px;font-size:13px;border:1.5px solid var(--border);border-radius:8px;outline:none;width:200px;" oninput="filterPipelineCards(this.value)">
+          <button class="btn btn-primary btn-sm" onclick="addDemoLead()">+ Add Lead</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Click a lead name to open their profile. Use the dropdown on each card to move them between stages. <span id="mobile-scroll-hint" style="display:none;">Scroll down to see all stages.</span></div>
+      <script>if(window.innerWidth<=768)document.getElementById('mobile-scroll-hint').style.display='inline';</script>
+      <div class="pipeline-wrap" id="pipeline-cols">
+        <div class="pipeline-col" data-stage="New Lead">
+          <div class="pipeline-col-title">New Lead<span class="pipeline-count" id="pc-new">3</span></div>
+          <div class="lead-card" data-lead="Marcus Thompson">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Marcus Thompson</div>
+              <div class="lead-meta">Auto Accident</div>
+              <div class="lead-meta">Apr 19</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option  selected>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+          <div class="lead-card" data-lead="Angela Foster">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Angela Foster</div>
+              <div class="lead-meta">Slip and Fall</div>
+              <div class="lead-meta">Apr 18</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option  selected>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+          <div class="lead-card" data-lead="Kevin James">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Kevin James</div>
+              <div class="lead-meta">Auto Accident</div>
+              <div class="lead-meta">Apr 17</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option  selected>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" data-stage="Intake Complete">
+          <div class="pipeline-col-title">Intake Complete<span class="pipeline-count">2</span></div>
+          <div class="lead-card" data-lead="David Rodriguez">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">David Rodriguez</div>
+              <div class="lead-meta">Workplace Injury</div>
+              <div class="lead-meta">Apr 17</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option  selected>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+          <div class="lead-card" data-lead="Patricia Moore">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Patricia Moore</div>
+              <div class="lead-meta">Premises Liability</div>
+              <div class="lead-meta">Apr 15</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option  selected>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" data-stage="Decision Ready">
+          <div class="pipeline-col-title">Decision Ready<span class="pipeline-count">1</span></div>
+          <div class="lead-card" data-lead="Tamara Wilson">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Tamara Wilson</div>
+              <div class="lead-meta">Auto Accident</div>
+              <div class="lead-meta">Apr 16</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option  selected>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" data-stage="Accepted">
+          <div class="pipeline-col-title">Accepted<span class="pipeline-count">1</span></div>
+          <div class="lead-card" data-lead="Robert Chen">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Robert Chen</div>
+              <div class="lead-meta">Premises Liability</div>
+              <div class="lead-meta">Apr 15</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option  selected>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" data-stage="Consult Scheduled">
+          <div class="pipeline-col-title">Consult Scheduled<span class="pipeline-count">2</span></div>
+          <div class="lead-card" data-lead="Jennifer Liu">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Jennifer Liu</div>
+              <div class="lead-meta">Slip and Fall</div>
+              <div class="lead-meta">Apr 18</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option  selected>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+          <div class="lead-card" data-lead="Michael Brown">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Michael Brown</div>
+              <div class="lead-meta">Auto Accident</div>
+              <div class="lead-meta">Apr 14</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option  selected>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" data-stage="Review Requested">
+          <div class="pipeline-col-title">Review Requested<span class="pipeline-count">1</span></div>
+          <div class="lead-card" data-lead="Sandra Lee">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Sandra Lee</div>
+              <div class="lead-meta">Workplace Injury</div>
+              <div class="lead-meta">Apr 12</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option  selected>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" style="background:#edf7f1;" data-stage="Review: Yes">
+          <div class="pipeline-col-title" style="color:var(--green);">Review: Yes<span class="pipeline-count">2</span></div>
+          <div class="lead-card" data-lead="Carlos Mendez">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Carlos Mendez</div>
+              <div class="lead-meta">Auto Accident</div>
+              <div class="lead-meta">Apr 10</div>
+              <span style="background:#edf7f1;color:var(--green);padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600;margin-top:4px;display:inline-block;">&#9733; Confirmed</span>
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option  selected>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+          <div class="lead-card" data-lead="Diane Park">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Diane Park</div>
+              <div class="lead-meta">Slip and Fall</div>
+              <div class="lead-meta">Apr 9</div>
+              <span style="background:#edf7f1;color:var(--green);padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600;margin-top:4px;display:inline-block;">&#9733; Confirmed</span>
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option  selected>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" style="background:#fdf0ef;" data-stage="Review: No">
+          <div class="pipeline-col-title" style="color:var(--red);">Review: No<span class="pipeline-count">1</span></div>
+          <div class="lead-card" data-lead="Thomas Bell">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Thomas Bell</div>
+              <div class="lead-meta">Premises Liability</div>
+              <div class="lead-meta">Apr 8</div>
+              <span style="background:#fdf0ef;color:var(--red);padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600;margin-top:4px;display:inline-block;">&#9888; Needs Outreach</span>
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option  selected>Review: No</option><option>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+        <div class="pipeline-col" data-stage="Left Review">
+          <div class="pipeline-col-title">Left Review<span class="pipeline-count">1</span></div>
+          <div class="lead-card" data-lead="Linda Hayes">
+              <div class="lead-name" style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(this.closest('.lead-card'))">Linda Hayes</div>
+              <div class="lead-meta">Auto Accident</div>
+              <div class="lead-meta">Mar 28</div>
+              
+              <select class="lead-stage-select" onchange="moveLead(this)" style="margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;">
+                <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option  selected>Left Review</option><option>Declined</option>
+              </select>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALL LOG -->
+    <div class="view" id="view-calls">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Monthly Summary</div></div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Month</th><th>Total Calls</th><th>Total Minutes</th><th>Avg per Day</th></tr></thead><tbody>
+          <tr><td>Jan 2026</td><td>98</td><td>412 min</td><td>3.2</td></tr>
+          <tr><td>Feb 2026</td><td>112</td><td>487 min</td><td>4.0</td></tr>
+          <tr><td>Mar 2026</td><td>127</td><td>554 min</td><td>4.1</td></tr>
+          <tr style="background:rgba(27,79,138,0.04);font-weight:500;"><td>Apr 2026 <span class="pill pill-blue" style="font-size:10px;">Current</span></td><td>34</td><td>148 min</td><td>1.7</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Call Log</div><span style="font-size:13px;color:var(--muted);">34 calls · 148 min total</span></div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Caller</th><th>Phone</th><th>Time</th><th>Duration</th><th>Language</th><th>Source</th><th>Outcome</th></tr></thead><tbody>
+          <tr><td><strong>Marcus Thompson</strong></td><td>(404) 555-0211</td><td>Apr 19, 10:14 AM</td><td>4m 32s</td><td>EN</td><td>Google</td><td><span class="pill pill-green">Lead Captured</span></td></tr>
+          <tr><td><strong>Anonymous</strong></td><td>(678) 555-0334</td><td>Apr 19, 9:02 AM</td><td>1m 12s</td><td>EN</td><td>Unknown</td><td><span class="pill pill-gray">Voicemail</span></td></tr>
+          <tr><td><strong>Jennifer Liu</strong></td><td>(770) 555-0198</td><td>Apr 18, 2:45 PM</td><td>6m 18s</td><td>EN</td><td>Referral</td><td><span class="pill pill-green">Appt Booked</span></td></tr>
+          <tr><td><strong>David Rodriguez</strong></td><td>(404) 555-0445</td><td>Apr 18, 11:30 AM</td><td>5m 04s</td><td>EN</td><td>Google</td><td><span class="pill pill-green">Lead Captured</span></td></tr>
+          <tr><td><strong>Thomas Bell</strong></td><td>(678) 555-0567</td><td>Apr 17, 3:15 PM</td><td>8m 41s</td><td>EN</td><td>Google</td><td><span class="pill pill-red">Escalated</span></td></tr>
+          <tr><td><strong>Tamara Wilson</strong></td><td>(404) 555-0312</td><td>Apr 16, 1:00 PM</td><td>5m 12s</td><td>EN</td><td>Facebook</td><td><span class="pill pill-green">Lead Captured</span></td></tr>
+          <tr><td><strong>Robert Chen</strong></td><td>(404) 555-0589</td><td>Apr 15, 4:20 PM</td><td>7m 02s</td><td>EN</td><td>Referral</td><td><span class="pill pill-green">Appt Booked</span></td></tr>
+          <tr><td><strong>Patricia Moore</strong></td><td>(404) 555-0221</td><td>Apr 15, 10:00 AM</td><td>3m 48s</td><td>EN</td><td>Google</td><td><span class="pill pill-green">Lead Captured</span></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- TRANSCRIPTS -->
+    <div class="view" id="view-transcripts">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Call Transcripts</div>
+          <div style="display:flex;gap:8px;"><input type="text" placeholder="Search transcripts..." style="padding:6px 12px;font-size:13px;border:1.5px solid var(--border);border-radius:8px;outline:none;width:200px;"></div>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Every call answered by AVA is transcribed here. Flag transcripts that need follow-up and add internal notes.</p>
+        <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-size:14px;font-weight:600;">Jennifer Liu</div><div style="font-size:11px;color:var(--muted);">Apr 18, 2:45 PM · 6m 18s</div></div>
+            <div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" style="font-size:11px;" id="flag-btn-1" onclick="flagTranscript('flag-btn-1', 'Jennifer Liu')">&#9873; Flag</button><button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="addTranscriptNote('note-1')">+ Note</button></div>
+          </div>
+          <div id="note-1" style="display:none;margin-bottom:10px;background:#fffbeb;border:1px solid #fbd38d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;"></div>
+          <div style="font-size:13px;white-space:pre-wrap;background:var(--cream);padding:14px;border-radius:8px;line-height:1.7;max-height:220px;overflow-y:auto;">AVA: Thank you for calling Harrison and Cole. My name is AVA, your virtual legal assistant. How can I help you today?
+
+Caller: Hi, I was in a car accident last week and I want to speak with an attorney.
+
+AVA: I'm so sorry to hear that. I'd be happy to help. May I get your full name and a good callback number?
+
+Caller: Jennifer Liu, and my number is 770-555-0198.
+
+AVA: Thank you, Jennifer. Were you the driver or a passenger?
+
+Caller: I was the driver. The other car ran a red light and hit me on the driver's side.
+
+AVA: I understand. Were you injured, and have you sought medical treatment?
+
+Caller: Yes, I went to the ER that night. I have neck and back pain they're still evaluating.
+
+AVA: When did the accident occur?
+
+Caller: April 12th, around 4pm.
+
+AVA: Based on what you've shared, our attorneys would want to speak with you. I can schedule a free consultation this week — would that work?
+
+Caller: Yes, absolutely.
+
+AVA: Wonderful. I'm sending you a booking link right now. You'll receive a confirmation text shortly.</div>
+        </div>
+        <div style="padding:16px 0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-size:14px;font-weight:600;">Thomas Bell</div><div style="font-size:11px;color:var(--muted);">Apr 17, 3:15 PM · 8m 41s · <span style="color:var(--red);font-weight:600;">&#9873; Flagged — Escalated</span></div></div>
+            <div style="display:flex;gap:6px;"><button class="btn btn-outline btn-sm" style="font-size:11px;color:var(--red);" onclick="addTranscriptNote('note-2')">+ Note</button></div>
+          </div>
+          <div id="note-2" style="background:#fff8e6;border:1px solid #fbd38d;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#92400e;">Note: Caller mentioned hospitalization. Escalated correctly. James to call back — urgent.</div>
+          <div style="font-size:13px;white-space:pre-wrap;background:var(--cream);padding:14px;border-radius:8px;line-height:1.7;max-height:160px;overflow-y:auto;">AVA: Thank you for calling Harrison and Cole. My name is AVA. How can I help you today?
+
+Caller: I need to speak with an attorney right now. I was in a slip and fall at a grocery store and I've been hospitalized for two days.
+
+AVA: I'm very sorry to hear that. Are you currently receiving medical care and in a safe place?
+
+Caller: Yes I'm at Grady, but I need legal help immediately.
+
+AVA: Absolutely. Given the urgency, I'm escalating this to our team right now. If no one is immediately available, an attorney will call you back within the hour. Can you confirm your callback number?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESCALATIONS -->
+    <div class="view" id="view-escalations">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Escalations</div><span class="pill pill-red">1 open</span></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">These are calls where AVA determined the situation needed a human. Review each one, call the person back, and mark it resolved.</p>
+        <div style="background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:13px;color:var(--red);">
+          <strong>What to do:</strong> Call the client back, add a note about what happened, then mark it resolved. Unresolved escalations stay red.
+        </div>
+        <div id="esc-note-wrap" style="display:none;margin-bottom:14px;background:#fffbeb;border:1px solid #fbd38d;border-radius:8px;padding:12px 16px;font-size:13px;color:#92400e;"></div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Caller</th><th>Phone</th><th>Time</th><th>Trigger</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          <tr id="esc-row-1">
+            <td><strong>Thomas Bell</strong></td>
+            <td>(678) 555-0567</td>
+            <td style="font-size:12px;">Apr 17, 3:15 PM</td>
+            <td style="font-size:12px;color:var(--red);">Said "hospitalized"</td>
+            <td><span class="pill pill-red">Open</span></td>
+            <td style="display:flex;gap:5px;flex-wrap:wrap;">
+              <a href="tel:6785550567" class="btn btn-sky btn-sm" style="font-size:11px;padding:3px 8px;text-decoration:none;">&#128222; Call Back</a>
+              <button class="btn btn-success btn-sm" style="font-size:11px;padding:3px 8px;" onclick="document.querySelector('#esc-row-1 td:nth-child(5)').innerHTML='<span class=&quot;pill pill-green&quot;>Resolved</span>';toast('Escalation resolved.')">&#10003; Resolved</button>
+              <button class="btn btn-outline btn-sm" style="font-size:11px;padding:3px 8px;" onclick="addEscalationNote('esc-note-wrap')">Add Note</button>
+            </td>
+          </tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="view" id="view-bookings">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--navy);">6</div><div style="font-size:11px;color:var(--muted);">Upcoming</div></div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--green);">9</div><div style="font-size:11px;color:var(--muted);">Completed</div></div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--red);">2</div><div style="font-size:11px;color:var(--muted);">No-Shows</div></div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--orange);">1</div><div style="font-size:11px;color:var(--muted);">Rescheduled</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Bookings</div><div style="display:flex;gap:6px;"><select class="btn btn-outline btn-sm" style="padding:5px 10px;font-size:12px;"><option>Upcoming</option><option>All</option><option>No-Shows</option></select><button class="btn btn-primary btn-sm" onclick="addDemoBooking()">+ Add</button></div></div>
+        <div style="background:rgba(41,168,224,0.06);border:1px solid rgba(41,168,224,0.2);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.7;">
+          <strong style="color:var(--navy);">&#128172; Automated SMS:</strong> <span style="color:var(--muted);">Cancel queues a cancellation text. Reschedule sends a booking link. No-Show starts the follow-up timer. Mark Complete triggers the review request SMS.</span>
+        </div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Client</th><th>Date</th><th>Time</th><th>Assigned</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bookings-tbody">
+          <tr id="bk-1"><td><strong style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(null,'Marcus Thompson','(404) 555-0211')">Marcus Thompson</strong><div style="font-size:11px;color:var(--muted);">(404) 555-0211</div></td><td>Apr 21</td><td>10:00 AM</td><td style="font-size:12px;">Sarah Mitchell</td><td id="bk-1-status"><span class="pill pill-blue">Scheduled</span></td><td id="bk-1-actions" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="no-show-btn" onclick="bookingAction('bk-1','no-show')">No-Show</button><button class="btn btn-outline btn-sm" style="font-size:11px;padding:3px 8px;" onclick="bookingAction('bk-1','reschedule')">Reschedule</button><button class="btn btn-danger btn-sm" style="font-size:11px;padding:3px 8px;" onclick="bookingAction('bk-1','cancel')">Cancel</button></td></tr>
+          <tr id="bk-2"><td><strong style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(null,'Jennifer Liu','(770) 555-0198')">Jennifer Liu</strong><div style="font-size:11px;color:var(--muted);">(770) 555-0198</div></td><td>Apr 21</td><td>2:00 PM</td><td style="font-size:12px;">James Harrison</td><td id="bk-2-status"><span class="pill pill-blue">Scheduled</span></td><td id="bk-2-actions" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="no-show-btn" onclick="bookingAction('bk-2','no-show')">No-Show</button><button class="btn btn-outline btn-sm" style="font-size:11px;padding:3px 8px;" onclick="bookingAction('bk-2','reschedule')">Reschedule</button><button class="btn btn-danger btn-sm" style="font-size:11px;padding:3px 8px;" onclick="bookingAction('bk-2','cancel')">Cancel</button></td></tr>
+          <tr id="bk-3"><td><strong style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(null,'Patricia Moore','(404) 555-0221')">Patricia Moore</strong><div style="font-size:11px;color:var(--muted);">(404) 555-0221</div></td><td>Apr 22</td><td>11:30 AM</td><td style="font-size:12px;">Sarah Mitchell</td><td id="bk-3-status"><span class="pill pill-blue">Scheduled</span></td><td id="bk-3-actions" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="no-show-btn" onclick="bookingAction('bk-3','no-show')">No-Show</button><button class="btn btn-outline btn-sm" style="font-size:11px;padding:3px 8px;" onclick="bookingAction('bk-3','reschedule')">Reschedule</button></td></tr>
+          <tr id="bk-4"><td><strong style="cursor:pointer;color:var(--navy);" onclick="openDetailFor(null,'Sandra Lee','(678) 555-0301')">Sandra Lee</strong><div style="font-size:11px;color:var(--muted);">(678) 555-0301</div></td><td>Apr 14</td><td>9:00 AM</td><td style="font-size:12px;">Marcus Webb</td><td id="bk-4-status"><span class="pill pill-green">Completed</span></td><td id="bk-4-actions"><button class="btn btn-success btn-sm" style="font-size:11px;padding:4px 8px;" onclick="bookingAction('bk-4','review')">&#9733; Send Review SMS</button></td></tr>
+          <tr id="bk-5"><td><strong>Kevin James</strong><div style="font-size:11px;color:var(--muted);">(770) 555-0490</div></td><td>Apr 13</td><td>3:00 PM</td><td style="font-size:12px;">James Harrison</td><td id="bk-5-status"><span class="pill pill-red">No-Show</span></td><td id="bk-5-actions"><span style="font-size:11px;color:var(--muted);">Follow-up sent</span></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- NO-SHOW QUEUE -->
+    <div class="view" id="view-noshow">
+      <div class="card">
+        <div class="card-header"><div class="card-title">No-Show Follow-Up Queue</div><span style="font-size:13px;color:var(--muted);">2 awaiting follow-up</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+          <div style="background:rgba(41,168,224,0.06);border:1px solid rgba(41,168,224,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.6;"><strong style="color:var(--navy);">&#128172; Automatic</strong><br><span style="color:var(--muted);">Follow-up SMS fires automatically after your set delay. No action needed.</span></div>
+          <div style="background:#fff8e6;border:1px solid #fbd38d;border-radius:10px;padding:14px;font-size:13px;line-height:1.6;"><strong style="color:#8a5a00;">&#128222; Manual</strong><br><span style="color:var(--muted);">If you called the client yourself, log it here. This cancels the pending SMS.</span></div>
+        </div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Client</th><th>Missed Appointment</th><th>Auto SMS</th><th>Actions</th></tr></thead><tbody id="noshow-tbody">
+          <tr id="ns-1"><td><strong>Kevin James</strong><div style="font-size:11px;color:var(--muted);">(770) 555-0490</div></td><td>Apr 13, 3:00 PM</td><td id="ns-1-status"><span class="pill pill-orange">Pending</span></td><td id="ns-1-actions" style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-sky btn-sm" style="font-size:11px;" onclick="noshowAction('ns-1','sms','Kevin James')">Send SMS Now</button><button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="noshowAction('ns-1','called','Kevin James')">I Called Them</button><button class="btn btn-outline btn-sm" style="font-size:11px;color:var(--muted);" onclick="noshowAction('ns-1','resolved','Kevin James')">Resolved</button></td></tr>
+          <tr id="ns-2"><td><strong>Angela Foster</strong><div style="font-size:11px;color:var(--muted);">(770) 555-0421</div></td><td>Apr 11, 10:00 AM</td><td id="ns-2-status"><span class="pill pill-orange">Pending</span></td><td id="ns-2-actions" style="display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-sky btn-sm" style="font-size:11px;" onclick="noshowAction('ns-2','sms','Angela Foster')">Send SMS Now</button><button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="noshowAction('ns-2','called','Angela Foster')">I Called Them</button><button class="btn btn-outline btn-sm" style="font-size:11px;color:var(--muted);" onclick="noshowAction('ns-2','resolved','Angela Foster')">Resolved</button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SOURCE TRACKING -->
+    <div class="view" id="view-sources">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Lead Sources</div>
+          <div style="display:flex;gap:8px;"><select class="btn btn-outline btn-sm" style="padding:5px 10px;font-size:12px;" onchange="filterSources(this.value)"><option value="all">All Time</option><option value="april">April 2026</option><option value="march">March 2026</option></select><button class="btn btn-outline btn-sm" onclick="addDemoSource()">+ Add Source</button></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+          <div style="background:var(--cream);border-radius:10px;padding:16px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:28px;font-weight:600;color:var(--navy);">371</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">Total Calls</div></div>
+          <div style="background:var(--cream);border-radius:10px;padding:16px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:28px;font-weight:600;color:var(--orange);">5</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">Active Sources</div></div>
+          <div style="background:var(--cream);border-radius:10px;padding:16px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:24px;font-weight:600;color:var(--green);">Google</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">Top Source</div></div>
+        </div>
+        <div class="source-list">
+          <div class="source-row"><div class="source-name">Google</div><div class="source-bar-wrap"><div class="source-bar" style="width:42%;"></div></div><div style="width:40px;text-align:right;font-size:13px;color:var(--muted);">156</div><div class="source-pct">42%</div></div>
+          <div class="source-row"><div class="source-name">Referral</div><div class="source-bar-wrap"><div class="source-bar" style="width:28%;background:var(--sky);"></div></div><div style="width:40px;text-align:right;font-size:13px;color:var(--muted);">104</div><div class="source-pct" style="color:var(--sky);">28%</div></div>
+          <div class="source-row"><div class="source-name">Facebook</div><div class="source-bar-wrap"><div class="source-bar" style="width:15%;background:var(--orange);"></div></div><div style="width:40px;text-align:right;font-size:13px;color:var(--muted);">56</div><div class="source-pct" style="color:var(--orange);">15%</div></div>
+          <div class="source-row"><div class="source-name">Direct</div><div class="source-bar-wrap"><div class="source-bar" style="width:10%;background:var(--green);"></div></div><div style="width:40px;text-align:right;font-size:13px;color:var(--muted);">37</div><div class="source-pct" style="color:var(--green);">10%</div></div>
+          <div class="source-row"><div class="source-name">Unknown</div><div class="source-bar-wrap"><div class="source-bar" style="width:5%;background:var(--border);"></div></div><div style="width:40px;text-align:right;font-size:13px;color:var(--muted);">18</div><div class="source-pct" style="color:var(--muted);">5%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALL VOLUME -->
+    <div class="view" id="view-volume">
+      <div style="display:flex;gap:4px;background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:3px;width:fit-content;margin-bottom:20px;">
+        <button class="time-tab active" id="cv-hourly" onclick="showCVChart('hourly')">By Hour</button>
+        <button class="time-tab" id="cv-daily" onclick="showCVChart('daily')">By Day</button>
+        <button class="time-tab" id="cv-monthly" onclick="showCVChart('monthly')">By Month</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title" id="cv-title">Call Volume by Hour</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">See when your calls peak so your team has coverage at the right times.</p>
+        <div id="cv-chart" style="overflow-x:auto;"></div>
+      </div>
+    </div>
+
+
+    <!-- SMS AUTOMATION -->
+    <div class="view" id="view-sms">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Booking Confirmation SMS</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Sent automatically when a caller books an appointment through AVA.</p>
+        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-family:Outfit,sans-serif;line-height:1.6;" rows="3">Hi {{name}}, your consultation with Harrison and Cole LLP is confirmed for {{date}} at {{time}}. Our office is at 123 Peachtree St NW, Atlanta GA 30303. Reply STOP to opt out.</textarea>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Appointment Reminder SMS</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Sent automatically before the appointment. Reduces no-shows.</p>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--navy);cursor:pointer;font-size:13px;"><input type="radio" name="reminder_timing" checked style="accent-color:var(--navy);"> 24 hours before</label>
+          <label style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="reminder_timing" style="accent-color:var(--navy);"> 2 hours before</label>
+          <label style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="reminder_timing" style="accent-color:var(--navy);"> Both</label>
+        </div>
+        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-family:Outfit,sans-serif;line-height:1.6;" rows="3">Hi {{name}}, a reminder that your consultation with Harrison and Cole LLP is tomorrow at {{time}}. Questions? Call us at (404) 555-0100. Reply STOP to opt out.</textarea>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Review Request</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:var(--muted);">Automation on</span>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Sent after a consultation is marked complete. AVA asks the client to leave a review — then responds based on their answer.</p>
+        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-family:Outfit,sans-serif;line-height:1.6;margin-bottom:16px;" rows="2">Hi {{name}}, thank you for choosing Harrison and Cole. Would you be willing to leave us a Google review? Reply YES for the link or NO to opt out.</textarea>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:#edf7f1;border:1px solid #b8e0c8;border-radius:10px;padding:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px;">When client replies YES &#8594;</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">AVA automatically sends your Google review link. No action needed from your team.</div>
+            <div style="margin-top:10px;background:var(--white);border-radius:7px;padding:8px 12px;font-size:12px;font-style:italic;color:var(--text);">"Thank you! Here is your link: g.page/r/harrisonandcole"</div>
+          </div>
+          <div style="background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:6px;">When client replies NO &#8594;</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6;">The client is flagged in your Team Messages feed so you can follow up personally and resolve any concerns.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">No-Show Follow-Up</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Sent after the delay you set when a booking is marked no-show. Cancels automatically if the client contacts your office first.</p>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+          <span style="font-size:13px;color:var(--muted);">Send after:</span>
+          <label style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="noshow_delay" style="accent-color:var(--navy);"> 1 hour</label>
+          <label style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--navy);cursor:pointer;font-size:13px;"><input type="radio" name="noshow_delay" checked style="accent-color:var(--navy);"> 2 hours</label>
+          <label style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="noshow_delay" style="accent-color:var(--navy);"> 24 hours</label>
+        </div>
+        <textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;font-family:Outfit,sans-serif;line-height:1.6;" rows="3">Hi {{name}}, we missed you for your consultation today. We would love to reschedule — reply YES for available times or call us at (404) 555-0100. Reply STOP to opt out.</textarea>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Automation On / Off</div><span style="font-size:12px;color:var(--muted);">Toggle without losing your templates</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--cream);border-radius:10px;">
+            <div><div style="font-size:13px;font-weight:600;">Booking Confirmation</div><div style="font-size:12px;color:var(--muted);">Sent when AVA books an appointment</div></div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--cream);border-radius:10px;">
+            <div><div style="font-size:13px;font-weight:600;">Appointment Reminder</div><div style="font-size:12px;color:var(--muted);">Sent before the appointment</div></div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--cream);border-radius:10px;">
+            <div><div style="font-size:13px;font-weight:600;">Review Request</div><div style="font-size:12px;color:var(--muted);">Sent after consultation is marked complete</div></div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--cream);border-radius:10px;">
+            <div><div style="font-size:13px;font-weight:600;">No-Show Follow-Up</div><div style="font-size:12px;color:var(--muted);">Sent after the delay timer fires</div></div>
+            <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMS QUEUE -->
+    <div class="view" id="view-sms-queue">
+      <div class="card">
+        <div class="card-header"><div class="card-title">SMS Queue</div>
+          <select class="btn btn-outline btn-sm" style="padding:5px 10px;font-size:12px;" onchange="filterSMSQueue(this.value)"><option value="pending">Pending</option><option value="sent">Sent</option><option value="failed">Failed</option><option value="all">All</option></select>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+          <div style="background:var(--cream);border-radius:10px;padding:14px;font-size:13px;"><div style="font-weight:700;color:var(--navy);margin-bottom:3px;">&#9200; Pending</div><div style="color:var(--muted);line-height:1.5;">Scheduled to send. Cancel before it fires if you handle it manually.</div></div>
+          <div style="background:var(--cream);border-radius:10px;padding:14px;font-size:13px;"><div style="font-weight:700;color:var(--green);margin-bottom:3px;">&#10003; Sent</div><div style="color:var(--muted);line-height:1.5;">Delivered successfully. The client received this message.</div></div>
+          <div style="background:var(--cream);border-radius:10px;padding:14px;font-size:13px;"><div style="font-weight:700;color:var(--red);margin-bottom:3px;">&#10005; Failed</div><div style="color:var(--muted);line-height:1.5;">Did not deliver. Usually a bad number or opted-out client. Retry here.</div></div>
+        </div>
+        <table><thead><tr><th>To</th><th>Type</th><th>Status</th><th>Scheduled</th><th>Actions</th></tr></thead><tbody>
+          <tr><td>(404) 555-0211</td><td>Booking Confirmation</td><td><span class="pill pill-green">Sent</span></td><td style="font-size:12px;">Apr 19, 10:15 AM</td><td></td></tr>
+          <tr><td>(770) 555-0198</td><td>Review Request</td><td><span class="pill pill-blue">Pending</span></td><td style="font-size:12px;">Apr 21, 5:00 PM</td><td><button class="btn btn-danger btn-sm" style="font-size:11px;padding:3px 8px;" onclick="toast('SMS cancelled.')">Cancel</button></td></tr>
+          <tr><td>(770) 555-0490</td><td>No-Show Follow-Up</td><td><span class="pill pill-blue">Pending</span></td><td style="font-size:12px;">Apr 13, 5:00 PM</td><td><button class="btn btn-danger btn-sm" style="font-size:11px;padding:3px 8px;" onclick="toast('SMS cancelled.')">Cancel</button></td></tr>
+          <tr><td>(678) 555-0902</td><td>Appointment Reminder</td><td><span class="pill pill-red">Failed</span></td><td style="font-size:12px;">Apr 18, 10:00 AM</td><td><button class="btn btn-sky btn-sm" style="font-size:11px;padding:3px 8px;" onclick="toast('SMS queued for retry.')">Retry</button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="view" id="view-tasks">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Tasks</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm active-filter" id="tf-all" onclick="filterTasks('all')">All</button>
+            <button class="btn btn-outline btn-sm" id="tf-pending" onclick="filterTasks('pending')">Pending</button>
+            <button class="btn btn-outline btn-sm" id="tf-inprog" onclick="filterTasks('inprog')">In Progress</button>
+            <button class="btn btn-outline btn-sm" id="tf-done" onclick="filterTasks('done')">Complete</button>
+            <button class="btn btn-primary btn-sm" onclick="addDemoTask()">+ Add Task</button>
+          </div>
+        </div>
+        <div id="task-list">
+          <div class="task-row" data-status="pending"><div class="task-check" onclick="cycleTask(this)"></div><div class="task-text">Call back Thomas Bell — hospitalization escalation from Apr 17<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Assigned to James Harrison · Due Apr 21</span></div><span class="pill pill-orange" style="font-size:10px;white-space:nowrap;">Pending</span></div>
+          <div class="task-row" data-status="inprog"><div class="task-check in-prog" onclick="cycleTask(this)">&#9654;</div><div class="task-text">Review and update intake questions with new case type fields<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Assigned to Sarah Mitchell · Due Apr 22</span></div><span class="pill pill-blue" style="font-size:10px;white-space:nowrap;">In Progress</span></div>
+          <div class="task-row" data-status="pending"><div class="task-check" onclick="cycleTask(this)"></div><div class="task-text">Set Google review link in SMS Automation settings<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Assigned to James Harrison · Due Apr 20</span></div><span class="pill pill-orange" style="font-size:10px;white-space:nowrap;">Pending</span></div>
+          <div class="task-row" data-status="done"><div class="task-check done" onclick="cycleTask(this)">&#10003;</div><div class="task-text done">Send onboarding welcome email to new client Robert Chen<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Completed Apr 15</span></div><span class="pill pill-green" style="font-size:10px;white-space:nowrap;">Complete</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM MESSAGES -->
+    <div class="view" id="view-messages">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Team Messages</div></div>
+        <div style="background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;">
+          <span style="font-size:16px;">&#9888;</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:3px;">Thomas Bell replied NO to a review request</div>
+            <div style="font-size:12px;color:var(--muted);">Apr 18 at 4:02 PM — This client had a negative experience. Reach out to resolve before it becomes a public review.</div>
+            <button class="btn btn-danger btn-sm" style="margin-top:8px;font-size:11px;" onclick="openDetail()">Reach Out</button>
+          </div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;">Team Notes</div>
+        <div>
+          <div class="msg-item">
+            <div class="msg-author">Sarah Mitchell <span style="background:var(--orange);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;margin-left:4px;">NEW</span></div>
+            <div class="msg-content">Jennifer Liu's file is ready for the consultation on Apr 21. I've reviewed the ER report. Auto accident looks strong — full liability on the other driver.</div>
+            <div class="msg-time">Apr 19, 9:30 AM</div>
+          </div>
+          <div class="msg-item">
+            <div class="msg-author">Marcus Webb</div>
+            <div class="msg-content">Intake form for David Rodriguez is complete. Medical records from Grady received and uploaded to the shared folder.</div>
+            <div class="msg-time">Apr 18, 3:15 PM</div>
+          </div>
+          <div class="msg-item">
+            <div class="msg-author">James Harrison</div>
+            <div class="msg-content">Reminder — follow up with all April no-shows by end of week. Kevin James and Angela Foster still haven't rescheduled.</div>
+            <div class="msg-time">Apr 17, 11:00 AM</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          <input type="text" placeholder="Write a note for your team..." style="flex:1;padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:Outfit,sans-serif;outline:none;">
+          <button class="btn btn-primary btn-sm" onclick="postDemoMessage()">Post</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTAKE QUESTIONS -->
+    <div class="view" id="view-intake">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Intake Questions</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">These are the questions AVA asks on every call. Required questions must be answered before AVA moves forward. Optional questions are asked when the caller is open to sharing more.</p>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;">Required — AVA always asks these</div>
+        <div class="iq-row"><span class="iq-badge req">REQ</span><input type="text" value="What is your full name?" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><button onclick="this.closest('.iq-row').remove(); toast('Question removed.')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;">&#10005;</button></div>
+        <div class="iq-row"><span class="iq-badge req">REQ</span><input type="text" value="What is a good callback number for you?" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><button onclick="this.closest('.iq-row').remove(); toast('Question removed.')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;">&#10005;</button></div>
+        <div class="iq-row"><span class="iq-badge req">REQ</span><input type="text" value="What type of incident are you calling about?" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><button onclick="this.closest('.iq-row').remove(); toast('Question removed.')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;">&#10005;</button></div>
+        <div class="iq-row"><span class="iq-badge req">REQ</span><input type="text" value="When did the incident occur?" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><button onclick="this.closest('.iq-row').remove(); toast('Question removed.')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;">&#10005;</button></div>
+        <div class="iq-row"><span class="iq-badge req">REQ</span><input type="text" value="Were you injured and have you sought medical treatment?" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><button onclick="this.closest('.iq-row').remove(); toast('Question removed.')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;">&#10005;</button></div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:18px 0 10px;">Optional — AVA asks when caller is open to sharing more</div>
+        <div class="iq-row"><span class="iq-badge opt">OPT</span><input type="text" value="Were you the driver or a passenger?" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><button onclick="this.closest('.iq-row').remove(); toast('Question removed.')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;">&#10005;</button></div>
+        <div class="iq-row"><span class="iq-badge opt">OPT</span><input type="text" value="Was a police report filed?" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><button onclick="this.closest('.iq-row').remove(); toast('Question removed.')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;">&#10005;</button></div>
+        <div style="display:flex;gap:10px;margin-top:14px;">
+          <button onclick="addIntakeRow()" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--sky);background:none;border:none;cursor:pointer;font-family:Outfit,sans-serif;padding:4px 0;">&#43; Add optional question</button>
+        </div>
+        <button class="btn btn-primary" style="margin-top:18px;" onclick="saveIntakeQuestions()" >Save Intake Questions</button>
+      </div>
+    </div>
+
+    <!-- BUSINESS HOURS -->
+    <div class="view" id="view-hours">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;">Manage how AVA handles bookings, when your office is open, and how automated follow-ups are timed. Changes save individually per card.</div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">AVA Consultation Type</div></div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">AVA uses this to confirm booking details with callers — she never asks whether the appointment is in person or virtual, she already knows from this setting.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+          <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--navy);cursor:pointer;font-size:13px;"><input type="radio" name="ct" checked style="accent-color:var(--navy);"> In Person</label>
+          <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="ct" style="accent-color:var(--navy);"> Virtual</label>
+          <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="ct" style="accent-color:var(--navy);"> Both</label>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="toast('Consultation type saved.')">Save</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Office Hours</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:14px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;width:100px;"><input type="checkbox" style="accent-color:var(--navy);" onchange="toggleDayHours(this)"> Monday</label><input type="time" value="09:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"><span style="color:var(--muted);">to</span><input type="time" value="17:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"></div>
+          <div style="display:flex;align-items:center;gap:14px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;width:100px;"><input type="checkbox" checked style="accent-color:var(--navy);" onchange="toggleDayHours(this)"> Tuesday</label><input type="time" value="09:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"><span style="color:var(--muted);">to</span><input type="time" value="17:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"></div>
+          <div style="display:flex;align-items:center;gap:14px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;width:100px;"><input type="checkbox" checked style="accent-color:var(--navy);" onchange="toggleDayHours(this)"> Wednesday</label><input type="time" value="09:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"><span style="color:var(--muted);">to</span><input type="time" value="17:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"></div>
+          <div style="display:flex;align-items:center;gap:14px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;width:100px;"><input type="checkbox" checked style="accent-color:var(--navy);" onchange="toggleDayHours(this)"> Thursday</label><input type="time" value="09:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"><span style="color:var(--muted);">to</span><input type="time" value="17:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"></div>
+          <div style="display:flex;align-items:center;gap:14px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;width:100px;"><input type="checkbox" checked style="accent-color:var(--navy);" onchange="toggleDayHours(this)"> Friday</label><input type="time" value="09:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"><span style="color:var(--muted);">to</span><input type="time" value="17:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;"></div>
+          <div style="display:flex;align-items:center;gap:14px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;width:100px;"><input type="checkbox" style="accent-color:var(--navy);" onchange="toggleDayHours(this)"> Saturday</label><input type="time" value="09:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;opacity:.4;" disabled><span style="color:var(--muted);">to</span><input type="time" value="13:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;opacity:.4;" disabled></div>
+          <div style="display:flex;align-items:center;gap:14px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;width:100px;"><input type="checkbox" style="accent-color:var(--navy);" onchange="toggleDayHours(this)"> Sunday</label><input type="time" value="09:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;opacity:.4;" disabled><span style="color:var(--muted);">to</span><input type="time" value="13:00" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:13px;font-family:Outfit,sans-serif;opacity:.4;" disabled></div>
+        </div>
+        <button class="btn btn-primary btn-sm" style="margin-top:16px;" onclick="toast('Office hours saved.')">Save Hours</button>
+      </div>
+    </div>
+
+
+    <!-- AVA SETTINGS -->
+    <div class="view" id="view-ava">
+      <div style="background:linear-gradient(135deg,var(--navy) 0%,#2563a8 100%);border-radius:14px;padding:20px 24px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span style="font-size:22px;">&#129302;</span><div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;">AVA — Your AI Answering Assistant</div></div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.6;max-width:480px;">AVA answers every call, captures intake information, qualifies callers, and books appointments automatically. The settings below control what AVA says on every call.</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;">AVA Phone Number</div>
+          <div style="font-size:18px;font-weight:700;font-family:Fraunces,serif;">(404) 555-0100</div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:6px;justify-content:flex-end;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;"></div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.7);">Live — answering calls</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid #fbd38d;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#92400e;line-height:1.6;">
+        <strong>What you control here:</strong> Business name, contact details, tone, escalation settings, and intake questions. Changes take effect within 60 seconds.<br>
+        <strong>What Aligned Impact manages:</strong> AVA's core call flow and qualification logic. Use the Adjustment Request section below for anything else — 2 included per year.
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Business Identity</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Business Name</label><input type="text" value="Harrison and Cole LLP" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">AVA's Name</label><input type="text" value="AVA" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Office Address</label><input type="text" value="123 Peachtree St NW, Atlanta GA 30303" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Industry</label><input type="text" value="Personal Injury Law Firm" readonly style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;opacity:.6;cursor:not-allowed;"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="toast('Identity saved. AVA will use these details on all future calls.')">Save Identity</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Call Handling</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Escalation Phone Number</label><input type="tel" value="+14045550199" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Escalation Trigger Words</label><input type="text" value="emergency, urgent, hospitalized, life threatening, immediate" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"></div>
+        </div>
+        <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">After-Hours Message</label><textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;line-height:1.6;" rows="3">Thank you for calling Harrison and Cole. Our office is currently closed. Our hours are Monday through Friday 9am to 5pm. Please leave your name and number and we will call you back the next business day.</textarea></div>
+        <div style="margin-bottom:16px;"><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">AVA Tone</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="tone" style="accent-color:var(--navy);"> Professional</label>
+            <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--navy);cursor:pointer;font-size:13px;"><input type="radio" name="tone" checked style="accent-color:var(--navy);"> Warm &amp; Friendly</label>
+            <label style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;"><input type="radio" name="tone" style="accent-color:var(--navy);"> Formal</label>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="toast('Call handling saved. AVA will use these settings immediately.')">Save Call Handling</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Request an AVA Adjustment</div><span style="font-size:12px;color:var(--muted);">2 included adjustments remaining this year</span></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Need AVA to handle something differently that goes beyond the fields above? Submit a request. The Aligned Impact team applies approved changes within 2 business days.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Category</label><select style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><option>Select a category...</option><option>How AVA greets callers</option><option>Booking confirmation language</option><option>How AVA handles pricing questions</option><option>Other</option></select></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Priority</label><select style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><option>Normal — within 2 business days</option><option>Urgent — within 24 hours</option></select></div>
+        </div>
+        <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Describe what you want</label><textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;line-height:1.6;" rows="3" placeholder="Be as specific as possible..."></textarea></div>
+        <button class="btn btn-primary btn-sm" onclick="submitAVAAdjustment(this)">Submit Request</button>
+      </div>
+    </div>
+
+    <!-- STAFF -->
+    <div class="view" id="view-staff">
+      <div style="background:rgba(41,168,224,0.06);border:1px solid rgba(41,168,224,0.2);border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.7;">
+        <strong style="color:var(--navy);">Manager vs Employee access:</strong><br>
+        <span style="color:var(--muted);"><strong>Employees</strong> see only their own bookings, leads, tasks, and calls.<br><strong>Managers</strong> see the full dashboard — all calls, all leads, settings, and team data. Only invite someone as a manager if you want them to have full access.</span>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Staff Members</div><button class="btn btn-primary btn-sm" onclick="openInviteModal()">+ Invite Staff</button></div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Status</th><th></th></tr></thead><tbody>
+          <tr><td><strong>James Harrison</strong></td><td><span class="pill pill-navy">Manager</span></td><td style="font-size:12px;">james@harrisonandcole.com</td><td><span class="pill pill-green">Active</span></td><td></td></tr>
+          <tr><td><strong>Sarah Mitchell</strong></td><td><span class="pill pill-blue">Employee</span></td><td style="font-size:12px;">sarah@harrisonandcole.com</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="toast('Staff member removed.')">Remove</button></td></tr>
+          <tr><td><strong>Marcus Webb</strong></td><td><span class="pill pill-blue">Employee</span></td><td style="font-size:12px;">marcus@harrisonandcole.com</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="toast('Staff member removed.')">Remove</button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+
+    <!-- CLIENT OUTREACH -->
+    <div class="view" id="view-outreach">
+      <div style="background:rgba(41,168,224,0.06);border:1px solid rgba(41,168,224,0.2);border-radius:12px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+        <div><div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px;">Campaign emails send from your business address</div><div style="font-size:12px;color:var(--muted);">Clients see your name and email — not Aligned Impact. They reply directly to you.</div></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="text" value="Harrison and Cole LLP" style="width:180px;padding:7px 10px;font-size:13px;border:1.5px solid var(--border);border-radius:7px;outline:none;font-family:Outfit,sans-serif;">
+          <input type="email" value="hello@harrisonandcole.com" style="width:210px;padding:7px 10px;font-size:13px;border:1.5px solid var(--border);border-radius:7px;outline:none;font-family:Outfit,sans-serif;">
+          <button class="btn btn-primary btn-sm" onclick="toast('Campaign email settings saved.')">Save</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">New Campaign</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Campaign Type</label><select style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><option>Win Back — inactive 60+ days</option><option>Appointment Reminder</option><option>Referral Incentive</option><option>Seasonal Promotion</option></select></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Audience</label><select style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"><option>All Past Clients</option><option>Inactive 60+ Days</option><option>No-Shows</option></select></div>
+        </div>
+        <div style="font-size:12px;color:var(--sky);margin-bottom:16px;font-weight:500;">Estimated reach: 47 clients</div>
+        <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Send via</label>
+          <div style="display:flex;gap:10px;">
+            <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--cream);border-radius:8px;border:2px solid var(--navy);cursor:pointer;font-size:13px;font-weight:500;"><input type="checkbox" checked style="accent-color:var(--navy);"> &#128172; SMS</label>
+            <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;" id="demo-email-label"><input type="checkbox" id="demo-email-toggle" style="accent-color:var(--navy);" onchange="var w=document.getElementById('demo-email-wrap');w.style.display=this.checked?'block':'none';this.closest('label').style.borderColor=this.checked?'var(--navy)':'var(--border)'"> &#9993; Email</label>
+          </div>
+        </div>
+        <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">SMS Message</label><textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;line-height:1.6;" rows="3" id="demo-sms-body" oninput="document.getElementById('demo-sms-count').textContent=this.value.length+' characters · '+Math.ceil(this.value.length/160)+' segment'">Hi {{name}}, it has been a while since we last spoke. If you or someone you know needs legal help after an injury, we are here. Reply to this message or call (404) 555-0100.</textarea><div style="font-size:11px;color:var(--muted);margin-top:4px;" id="demo-sms-count">142 characters · 1 segment</div></div>
+
+        <!-- EMAIL COMPOSE (hidden by default) -->
+        <div id="demo-email-wrap" style="display:none;">
+          <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Email Subject</label><input type="text" placeholder="e.g. We miss you — come back for a consultation" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div style="margin-bottom:14px;"><label style="display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Email Body</label><textarea style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;line-height:1.6;" rows="5" placeholder="Hi {{name}},&#10;&#10;We wanted to reach out..."></textarea></div>
+          <!-- Link insertion -->
+          <div style="border:1.5px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;">Add a Link</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <input type="text" placeholder="Link text e.g. Book Now" style="flex:1;min-width:140px;padding:8px 12px;font-size:13px;border:1.5px solid var(--border);border-radius:7px;outline:none;font-family:Outfit,sans-serif;">
+              <input type="url" placeholder="https://your-booking-link.com" style="flex:2;min-width:200px;padding:8px 12px;font-size:13px;border:1.5px solid var(--border);border-radius:7px;outline:none;font-family:Outfit,sans-serif;">
+              <button class="btn btn-outline btn-sm" onclick="toast('Link inserted into email body.')" style="white-space:nowrap;">+ Insert Link</button>
+            </div>
+          </div>
+          <!-- Image upload -->
+          <div style="border:1.5px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">Add an Image</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Upload an image to include in your email (logo, promo graphic). Max 2MB. JPG or PNG.</div>
+            <label style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;">
+              <span>&#128247;</span> Choose Image
+              <input type="file" accept="image/jpeg,image/png,image/gif" style="display:none;" onchange="handleDemoImageUpload(this)">
+            </label>
+            <div id="demo-image-preview-wrap" style="display:none;margin-top:12px;display:none;align-items:center;gap:10px;">
+              <img id="demo-image-preview" style="max-width:180px;max-height:100px;border-radius:8px;border:1px solid var(--border);">
+              <button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="document.getElementById('demo-image-preview-wrap').style.display='none';toast('Image removed.')">Remove</button>
+            </div>
+          </div>
+          <!-- PDF upload -->
+          <div style="border:1.5px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">Attach a PDF</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Attach one PDF (brochure, pricing sheet). Max 5MB.</div>
+            <label style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;">
+              <span>&#128196;</span> Choose PDF
+              <input type="file" accept="application/pdf" style="display:none;" onchange="handleDemoPDFUpload(this)">
+            </label>
+            <div id="demo-pdf-preview-wrap" style="display:none;margin-top:10px;align-items:center;gap:10px;">
+              <span style="font-size:13px;color:var(--navy);font-weight:500;" id="demo-pdf-name"></span>
+              <button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="document.getElementById('demo-pdf-preview-wrap').style.display='none';toast('PDF removed.')">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="sendDemoCampaign()">Send Campaign</button>
+          <button class="btn btn-outline" onclick="previewDemoCampaign()">Preview</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Campaign History</div></div>
+        <table><thead><tr><th>Campaign</th><th>Type</th><th>Audience</th><th>Channels</th><th>Status</th><th>Date</th></tr></thead><tbody>
+          <tr><td style="font-weight:600;">Spring Win Back</td><td><span class="pill pill-navy" style="font-size:10px;">Win Back</span></td><td style="font-size:12px;">Inactive 60+ days</td><td style="font-size:12px;">&#128172; SMS</td><td><span class="pill pill-green">Sent</span></td><td style="font-size:12px;">Apr 1, 2026</td></tr>
+          <tr><td style="font-weight:600;">March Referral Push</td><td><span class="pill pill-navy" style="font-size:10px;">Referral</span></td><td style="font-size:12px;">Completed consults</td><td style="font-size:12px;">&#128172; SMS &#9993; Email</td><td><span class="pill pill-green">Sent</span></td><td style="font-size:12px;">Mar 15, 2026</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- WHAT'S COMING -->
+    <div class="view" id="view-coming">
+      <div style="max-width:900px;">
+        <div style="margin-bottom:32px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+            <div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;color:var(--navy);">What's Coming</div>
+            <span style="background:#fffbeb;color:#8a5a00;border:1px solid #fbd38d;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">Building now</span>
+          </div>
+          <div class="cards-grid">
+            <div class="coming-card"><div class="coming-card-header"><div class="coming-card-title">&#129504; Business Insights</div><span class="badge-testing">Beta</span></div><div class="coming-card-desc">A plain-language weekly summary of your business performance. Answer rate trends, busiest call windows, top lead sources, no-show patterns, and specific actions to take this week. No charts to decode.</div><button class="feedback-btn-demo" onclick="toast('Thank you! Your feedback helps us prioritize what to build.')">Would this help you?</button></div>
+            <div class="coming-card"><div class="coming-card-header"><div class="coming-card-title">&#128196; Document and Intake Automation</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">After a consultation is booked, automatically send the client a link to complete intake forms or upload documents before they arrive. Your team walks in prepared.</div><button class="feedback-btn-demo" onclick="toast('Thank you! Your feedback helps us prioritize.')">Would this help you?</button></div>
+            <div class="coming-card"><div class="coming-card-header"><div class="coming-card-title">&#128279; Referral Engine</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">After each completed consultation, AVA sends a personalized referral link. Track which clients send referrals and reward them automatically with a custom incentive.</div><button class="feedback-btn-demo" onclick="toast('Thank you! Noted.')">Would this help you?</button></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+            <div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;color:var(--navy);">Workflow Intelligence</div>
+            <span style="background:var(--cream2);color:var(--muted);border:1px solid var(--border);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">Law Firm</span>
+          </div>
+          <div class="cards-grid">
+            <div class="coming-card"><div class="coming-card-header"><div class="coming-card-title">&#9878; Case Priority Recommendation</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">After every intake call, reviews case details and suggests urgent, standard, or low priority so the right attorney responds first.</div><button class="feedback-btn-demo" onclick="toast('Thank you! Noted.')">Would this help you?</button></div>
+            <div class="coming-card"><div class="coming-card-header"><div class="coming-card-title">&#128221; Pre-Consultation Brief</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">Before each consultation, generates a one-page summary of the client's intake answers so your attorneys arrive informed.</div><button class="feedback-btn-demo" onclick="toast('Thank you! Noted.')">Would this help you?</button></div>
+            <div class="coming-card"><div class="coming-card-header"><div class="coming-card-title">&#128241; Multilingual Client Support</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">AVA detects the caller's language and switches automatically. Full intake, booking, and follow-up in Spanish, French, and more.</div><button class="feedback-btn-demo" onclick="toast('Thank you! Noted.')">Would this help you?</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT DETAIL PANEL -->
+    <div class="client-detail-overlay" id="client-detail-overlay" onclick="if(event.target===this)closeDetail()">
+      <div class="client-detail-panel">
+        <div class="client-detail-header">
+          <h3>Marcus Thompson</h3>
+          <button class="client-detail-close" onclick="closeDetail()">&#10005;</button>
+        </div>
+        <div class="client-detail-body">
+          <div class="detail-section">
+            <div class="detail-section-title">Client Info</div>
+            <div class="detail-row"><span class="key">Phone</span><span class="val">(404) 555-0211</span></div>
+            <div class="detail-row"><span class="key">Created</span><span class="val">Apr 19, 2026</span></div>
+            <div class="detail-row"><span class="key">Source</span><span class="val">Google</span></div>
+            <div class="detail-row"><span class="key">Case Type</span><span class="val">Auto Accident</span></div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Move Stage</div>
+            <select style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;" onchange="toast('Stage updated to ' + this.value + '.')">
+              <option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Accepted</option><option>Consult Scheduled</option><option>Review Requested</option><option>Review: Yes</option><option>Review: No</option><option>Left Review</option><option>Declined</option>
+            </select>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Intake Notes</div>
+            <div style="font-size:13px;line-height:1.7;color:var(--text);">Caller was involved in a motor vehicle accident on April 14, 2026. Was the driver. Vehicle struck on driver's side by car running red light. Went to Northside Hospital ER that evening — neck and back pain currently under evaluation. Police report filed. Seeking legal representation.</div>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Add a Note</div>
+            <textarea placeholder="Internal note for your team..." style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;line-height:1.6;" rows="3"></textarea>
+            <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="toast('Note saved to client record.')">Save Note</button>
+          </div>
+          <div class="detail-section">
+            <div class="detail-section-title">Past Notes</div>
+            <div class="msg-item"><div class="msg-author">Sarah Mitchell</div><div class="msg-content">Medical records from Northside requested. Follow up if not received by Apr 23.</div><div class="msg-time">Apr 19, 2026</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+  </div><!-- end content -->
+
+  <!-- REPORT ISSUE FAB -->
+  <button class="report-fab" onclick="openReportModal()" title="Report an Issue">
+    <div class="fab-dot"></div> Help &amp; Support
+  </button>
+
+  <!-- REPORT ISSUE MODAL -->
+  <div class="report-modal-overlay" id="report-modal-overlay" onclick="if(event.target===this)closeReportModal()">
+    <div class="report-modal">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h3>&#128172; Report an Issue</h3>
+          <p style="margin-bottom:0;">Tell us what is happening. High and urgent issues are reviewed within a few hours.</p>
+        </div>
+        <button onclick="closeReportModal()" style="background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0 0 0 12px;line-height:1;">&#10005;</button>
+      </div>
+      <div class="report-field">
+        <label class="report-label">Which section is this about?</label>
+        <select class="report-input" id="report-section">
+          <option value="">Select a section...</option>
+          <option>Dashboard / Overview</option>
+          <option>Call Quality</option>
+          <option>Pipeline</option>
+          <option>Call Log</option>
+          <option>Transcripts</option>
+          <option>Escalations</option>
+          <option>Bookings</option>
+          <option>No-Show Queue</option>
+          <option>Source Tracking</option>
+          <option>Call Volume</option>
+          <option>SMS Automation</option>
+          <option>SMS Queue</option>
+          <option>Tasks</option>
+          <option>Team Messages</option>
+          <option>Intake Questions</option>
+          <option>Business Hours</option>
+          <option>AVA Settings</option>
+          <option>Staff</option>
+          <option>Client Outreach</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="report-field">
+        <label class="report-label">Urgency</label>
+        <div class="urgency-pills">
+          <button class="urgency-pill" data-urgency="low" onclick="selectUrgency(this)">Low</button>
+          <button class="urgency-pill" data-urgency="medium" onclick="selectUrgency(this)">Medium</button>
+          <button class="urgency-pill" data-urgency="high" onclick="selectUrgency(this)">High</button>
+          <button class="urgency-pill" data-urgency="urgent" onclick="selectUrgency(this)">&#128680; Urgent</button>
+        </div>
+      </div>
+      <div class="report-field">
+        <label class="report-label">Describe the issue</label>
+        <textarea class="report-input" id="report-description" rows="4" placeholder="What were you trying to do? What happened instead? The more detail the better."></textarea>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" style="flex:1;" id="btn-submit-report" onclick="submitReport()">Send Report</button>
+        <button class="btn btn-outline" onclick="closeReportModal()">Cancel</button>
+      </div>
+      <div id="report-alert" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- INVITE STAFF MODAL -->
+  <div id="invite-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;display:none;align-items:center;justify-content:center;" onclick="if(event.target===this)closeInviteModal()">
+    <div style="background:var(--white);border-radius:14px;padding:28px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(0,0,0,.18);">
+      <div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:6px;">Invite a Staff Member</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;">They will receive an email with setup instructions. Managers see the full dashboard. Employees see only their own bookings and tasks.</p>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;">Full Name</label>
+        <input type="text" id="invite-name" placeholder="e.g. Rachel Torres" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;">Email Address</label>
+        <input type="email" id="invite-email" placeholder="rachel@harrisonandcole.com" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:Outfit,sans-serif;outline:none;">
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px;">Role</label>
+        <div style="display:flex;gap:10px;">
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--cream);border-radius:8px;border:2px solid var(--navy);cursor:pointer;font-size:13px;flex:1;" id="role-employee-label"><input type="radio" name="invite-role" value="employee" checked style="accent-color:var(--navy);" onchange="this.closest('label').style.borderColor='var(--navy)';document.getElementById('role-manager-label').style.borderColor='var(--border)'"> Employee</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--cream);border-radius:8px;border:2px solid var(--border);cursor:pointer;font-size:13px;flex:1;" id="role-manager-label"><input type="radio" name="invite-role" value="manager" style="accent-color:var(--navy);" onchange="this.closest('label').style.borderColor='var(--navy)';document.getElementById('role-employee-label').style.borderColor='var(--border)'"> Manager</label>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="sendDemoInvite()">Send Invite</button>
+        <button class="btn btn-outline" onclick="closeInviteModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+var RANGES = {
+  today: { rate:'91%', rateSub:'21 of 23 answered', leads:'3', bookings:'2', bookingsSub:'0 no-shows', completion:'88%', reviews:'2', reviewsSub:'2 positive', missed:'2', insightsLabel:'Today', insightsBody:'<div style="margin-bottom:6px;">&#128222; <strong>23 calls</strong> today. Answer rate: <strong>91%</strong> — excellent coverage.</div><div style="margin-bottom:6px;">&#128337; Peak window: <strong>10am–12pm</strong>. 9 calls in that window alone.</div><div>&#128197; <strong>2 upcoming appointments</strong> today — both confirmed.</div>', label:'Today — Apr 20, 2026' },
+  week: { rate:'87%', rateSub:'30 of 34 answered', leads:'8', bookings:'6', bookingsSub:'1 no-show this week', completion:'82%', reviews:'7', reviewsSub:'5 positive responses', missed:'4', insightsLabel:'This Week', insightsBody:'<div style="margin-bottom:6px;">&#128222; <strong>34 calls</strong> this week. Answer rate: <strong>87%</strong> — 4 missed Friday afternoon.</div><div style="margin-bottom:6px;">&#128337; Busiest window: <strong>10am–12pm</strong> Tue–Thu. Make sure your team has coverage.</div><div style="margin-bottom:6px;">&#128269; Top source: <strong>Google</strong> (42% of calls).</div><div style="margin-bottom:6px;">&#128197; <strong>6 upcoming appointments</strong>, 2 completed. No-show rate: <strong>14%</strong>.</div><div>&#128680; <strong>Action needed:</strong> 1 unresolved escalation from Apr 17.</div>', label:'This Week — Apr 14–20, 2026' },
+  month: { rate:'84%', rateSub:'127 of 151 answered', leads:'34', bookings:'22', bookingsSub:'3 no-shows this month', completion:'85%', reviews:'19', reviewsSub:'16 positive responses', missed:'24', insightsLabel:'This Month', insightsBody:'<div style="margin-bottom:6px;">&#128222; <strong>151 calls</strong> this month. Answer rate: <strong>84%</strong> — strong performance.</div><div style="margin-bottom:6px;">&#128101; <strong>34 new leads</strong> captured. Best month since launch.</div><div style="margin-bottom:6px;">&#128269; Referrals up 18% from last month — consider a referral incentive campaign.</div><div>&#128197; No-show rate <strong>12%</strong> — within normal range for personal injury.</div>', label:'This Month — April 2026' }
+};
+
+function setRange(range) {
+  var d = RANGES[range];
+  document.getElementById('stat-rate').textContent = d.rate;
+  document.getElementById('stat-rate-sub').textContent = d.rateSub;
+  document.getElementById('stat-leads').textContent = d.leads;
+  document.getElementById('stat-bookings').textContent = d.bookings;
+  document.getElementById('stat-bookings-sub').textContent = d.bookingsSub;
+  document.getElementById('stat-completion').textContent = d.completion;
+  document.getElementById('stat-reviews').textContent = d.reviews;
+  document.getElementById('stat-reviews-sub').textContent = d.reviewsSub;
+  document.getElementById('stat-missed').textContent = d.missed;
+  document.getElementById('insights-label').textContent = d.insightsLabel;
+  document.getElementById('insights-body').innerHTML = d.insightsBody;
+  document.getElementById('overview-label').textContent = d.label;
+  document.querySelectorAll('.time-tab[data-range]').forEach(function(t){ t.classList.remove('active'); });
+  var el = document.querySelector('[data-range="' + range + '"]');
+  if (el) el.classList.add('active');
+}
+
+function toggleMobileNav() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var hamburger = document.getElementById('hamburger-btn');
+  if (!sidebar) return;
+  var isOpen = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', !isOpen);
+  if (overlay) overlay.classList.toggle('visible', !isOpen);
+  // Animate hamburger to X
+  if (hamburger) {
+    var spans = hamburger.querySelectorAll('span');
+    if (!isOpen) {
+      if (spans[0]) spans[0].style.cssText = 'transform:translateY(6px) rotate(45deg)';
+      if (spans[1]) spans[1].style.cssText = 'opacity:0';
+      if (spans[2]) spans[2].style.cssText = 'transform:translateY(-6px) rotate(-45deg)';
+    } else {
+      spans.forEach(function(s){ s.style.cssText = ''; });
+    }
+  }
+}
+
+function closeMobileNav() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var hamburger = document.getElementById('hamburger-btn');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('visible');
+  if (hamburger) hamburger.querySelectorAll('span').forEach(function(s){ s.style.cssText = ''; });
+}
+
+function switchView(viewId) {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  var el = document.getElementById(viewId);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var nav = document.querySelector('[data-view="' + viewId + '"]');
+  if (nav) nav.classList.add('active');
+  // Close mobile nav when view changes
+  closeMobileNav();
+  // Scroll to top on mobile
+  if (window.innerWidth <= 768) window.scrollTo(0, 0);
+  var titles = {
+    'view-overview':'Dashboard','view-scorecard':'Call Quality','view-pipeline':'Pipeline',
+    'view-calls':'Call Log','view-transcripts':'Transcripts','view-escalations':'Escalations',
+    'view-bookings':'Bookings','view-noshow':'No-Show Queue','view-sources':'Source Tracking',
+    'view-volume':'Call Volume','view-sms':'SMS Automation','view-sms-queue':'SMS Queue',
+    'view-tasks':'Tasks','view-messages':'Team Messages','view-intake':'Intake Questions',
+    'view-hours':'Business Hours','view-ava':'AVA Settings','view-staff':'Staff',
+    'view-outreach':'Client Outreach','view-coming':"What's Coming"
+  };
+  document.getElementById('page-title').textContent = titles[viewId] || '';
+  if (viewId === 'view-volume') showCVChart('hourly');
+}
+
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+function openDetail() {
+  document.getElementById('client-detail-overlay').classList.add('open');
+}
+function closeDetail() {
+  document.getElementById('client-detail-overlay').classList.remove('open');
+}
+
+function cycleTask(el) {
+  var row = el.closest('.task-row');
+  var status = row.getAttribute('data-status');
+  var pill = row.querySelector('.pill');
+  if (status === 'pending') {
+    row.setAttribute('data-status','inprog');
+    el.className = 'task-check in-prog'; el.innerHTML = '&#9654;';
+    el.closest('.task-row').querySelector('.task-text').classList.remove('done');
+    if (pill) { pill.className = 'pill pill-blue'; pill.textContent = 'In Progress'; }
+  } else if (status === 'inprog') {
+    row.setAttribute('data-status','done');
+    el.className = 'task-check done'; el.innerHTML = '&#10003;';
+    el.closest('.task-row').querySelector('.task-text').classList.add('done');
+    if (pill) { pill.className = 'pill pill-green'; pill.textContent = 'Complete'; }
+  } else {
+    row.setAttribute('data-status','pending');
+    el.className = 'task-check'; el.innerHTML = '';
+    el.closest('.task-row').querySelector('.task-text').classList.remove('done');
+    if (pill) { pill.className = 'pill pill-orange'; pill.textContent = 'Pending'; }
+  }
+}
+
+function filterTasks(filter) {
+  ['all','pending','inprog','done'].forEach(function(f){ document.getElementById('tf-'+f).style.borderColor=''; document.getElementById('tf-'+f).style.color=''; });
+  document.getElementById('tf-'+filter).style.borderColor='var(--navy)'; document.getElementById('tf-'+filter).style.color='var(--navy)';
+  document.querySelectorAll('.task-row').forEach(function(row){
+    var s = row.getAttribute('data-status');
+    row.style.display = (filter==='all'||(filter==='done'&&s==='done')||(filter==='inprog'&&s==='inprog')||(filter==='pending'&&s==='pending')) ? '' : 'none';
+  });
+}
+
+var CV_DATA = {
+  hourly: { labels:['12a','1a','2a','3a','4a','5a','6a','7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p','8p','9p','10p','11p'], counts:[0,0,0,0,0,0,1,3,8,14,22,19,16,13,21,18,12,7,3,1,0,0,0,0], color:'var(--navy)' },
+  daily: { labels:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], counts:[2,18,32,29,28,24,8], color:'var(--sky)' },
+  monthly: { labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], counts:[98,112,127,34,0,0,0,0,0,0,0,0], note:['','','','Current','','','','','','','',''], color:'var(--orange)' }
+};
+var CV_TITLES = { hourly:'Call Volume by Hour', daily:'Call Volume by Day of Week', monthly:'Call Volume by Month' };
+
+function showCVChart(range) {
+  ['hourly','daily','monthly'].forEach(function(r){ var el=document.getElementById('cv-'+r); if(el){ el.classList.toggle('active', r===range); }});
+  document.getElementById('cv-title').textContent = CV_TITLES[range];
+  var d = CV_DATA[range];
+  var max = Math.max.apply(null, d.counts) || 1;
+  var gap = range === 'hourly' ? '4' : '8';
+  var minW = range === 'hourly' ? '560' : '280';
+  var html = '<div style="display:flex;align-items:flex-end;gap:' + gap + 'px;height:140px;min-width:' + minW + 'px;padding-bottom:24px;">';
+  d.counts.forEach(function(count, i) {
+    var h = Math.max(Math.round((count/max)*120), count>0?2:0);
+    html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;">';
+    html += '<div style="font-size:10px;color:var(--muted);">' + (count||'') + '</div>';
+    var barColor = (d.counts[i] === 0) ? 'var(--border)' : d.color;
+    var opacity = (d.counts[i] === 0) ? '1' : '0.85';
+    html += '<div style="width:100%;background:' + barColor + ';border-radius:3px 3px 0 0;height:' + Math.max(h,2) + 'px;opacity:' + opacity + ';transition:height .3s;" title="' + d.labels[i] + ': ' + d.counts[i] + ' calls"></div>';
+    html += '<div style="font-size:9px;color:var(--muted);">' + d.labels[i] + '</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('cv-chart').innerHTML = html;
+}
+
+
+var SOURCE_DATA = {
+  all: { total:371, topSource:'Google', sources:[['Google',156,42],['Referral',104,28],['Facebook',56,15],['Direct',37,10],['Unknown',18,5]] },
+  april: { total:34, topSource:'Google', sources:[['Google',14,41],['Referral',10,29],['Facebook',6,18],['Direct',3,9],['Unknown',1,3]] },
+  march: { total:127, topSource:'Google', sources:[['Google',53,42],['Referral',36,28],['Facebook',19,15],['Direct',13,10],['Unknown',6,5]] }
+};
+
+function filterSources(val) {
+  var d = SOURCE_DATA[val] || SOURCE_DATA.all;
+  // Update summary cards
+  var cards = document.querySelectorAll('#view-sources .card .card > div, #view-sources .card > div:first-of-type');
+  var summaryGrid = document.querySelector('#view-sources .card div[style*="grid-template-columns:repeat(3"]');
+  if (summaryGrid) {
+    var divs = summaryGrid.querySelectorAll(':scope > div');
+    if (divs[0]) divs[0].querySelector('[style*="font-family:Fraunces"]').textContent = d.total;
+    if (divs[2]) divs[2].querySelector('[style*="font-family:Fraunces"]').textContent = d.topSource;
+  }
+  // Update bars
+  var rows = document.querySelectorAll('#view-sources .source-row');
+  d.sources.forEach(function(s, i) {
+    if (!rows[i]) return;
+    var bar = rows[i].querySelector('.source-bar');
+    var countEl = rows[i].querySelector('[style*="width:40px"]');
+    var pctEl = rows[i].querySelector('.source-pct');
+    if (bar) bar.style.width = s[2] + '%';
+    if (countEl) countEl.textContent = s[1];
+    if (pctEl) pctEl.textContent = s[2] + '%';
+  });
+}
+
+var SMS_QUEUE_DATA = {
+  all: [
+    {to:'(404) 555-0211', type:'Booking Confirmation', status:'sent', date:'Apr 19, 10:15 AM'},
+    {to:'(770) 555-0198', type:'Review Request', status:'pending', date:'Apr 21, 5:00 PM'},
+    {to:'(770) 555-0490', type:'No-Show Follow-Up', status:'pending', date:'Apr 13, 5:00 PM'},
+    {to:'(678) 555-0902', type:'Appointment Reminder', status:'failed', date:'Apr 18, 10:00 AM'}
+  ]
+};
+
+function filterSMSQueue(filter) {
+  var rows = SMS_QUEUE_DATA.all.filter(function(r){ return filter === 'all' || r.status === filter; });
+  var tbody = document.querySelector('#view-sms-queue table tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px;">No messages found.</td></tr>'; return; }
+  var PILL = {sent:'pill-green', pending:'pill-blue', failed:'pill-red', cancelled:'pill-gray'};
+  rows.forEach(function(r) {
+    var tr = document.createElement('tr');
+    var pill = PILL[r.status] || 'pill-gray';
+    tr.innerHTML = '<td>' + r.to + '</td><td>' + r.type + '</td><td><span class="pill ' + pill + '">' + r.status + '</span></td><td style="font-size:12px;">' + r.date + '</td><td></td>';
+    var actionCell = tr.cells[4];
+    if (r.status === 'pending') {
+      var btn = document.createElement('button');
+      btn.className = 'btn btn-danger btn-sm'; btn.style.fontSize = '11px'; btn.style.padding = '3px 8px'; btn.textContent = 'Cancel';
+      btn.addEventListener('click', function(){ toast('Pending SMS cancelled.'); tr.remove(); });
+      actionCell.appendChild(btn);
+    }
+    if (r.status === 'failed') {
+      var btn = document.createElement('button');
+      btn.className = 'btn btn-sky btn-sm'; btn.style.fontSize = '11px'; btn.style.padding = '3px 8px'; btn.textContent = 'Retry';
+      btn.addEventListener('click', function(){ toast('SMS queued for retry.'); });
+      actionCell.appendChild(btn);
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+function handleDemoImageUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { toast('Image must be under 2MB.'); input.value=''; return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById('demo-image-preview');
+    var wrap = document.getElementById('demo-image-preview-wrap');
+    if (preview) preview.src = e.target.result;
+    if (wrap) wrap.style.display = 'flex';
+    toast('Image attached: ' + file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleDemoPDFUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('PDF must be under 5MB.'); input.value=''; return; }
+  var nameEl = document.getElementById('demo-pdf-name');
+  var wrap = document.getElementById('demo-pdf-preview-wrap');
+  if (nameEl) nameEl.textContent = '&#128196; ' + file.name;
+  if (wrap) wrap.style.display = 'flex';
+  toast('PDF attached: ' + file.name);
+}
+
+function previewDemoCampaign() {
+  var useSMS = document.getElementById('demo-email-toggle') ? !document.getElementById('demo-email-toggle').checked : true;
+  var smsBody = document.getElementById('demo-sms-body') ? document.getElementById('demo-sms-body').value : '';
+  var preview = 'SMS PREVIEW:\nHi Jessica, ' + smsBody.replace('Hi {{name}}, ','').replace('{{name}}','Jessica');
+  toast(preview.substring(0, 80) + '...');
+}
+
+function filterPipelineCards(q) {
+  document.querySelectorAll('.lead-card').forEach(function(card) {
+    card.style.display = card.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+document.querySelectorAll('.nav-item[data-view]').forEach(function(btn) {
+  btn.addEventListener('click', function() { switchView(this.getAttribute('data-view')); });
+});
+document.querySelectorAll('.time-tab[data-range]').forEach(function(btn) {
+  btn.addEventListener('click', function() { setRange(this.getAttribute('data-range')); });
+});
+
+
+// ─── PIPELINE FUNCTIONS ───────────────────────────────────────────────────
+function moveLead(select) {
+  var card = select.closest('.lead-card');
+  var newStage = select.value;
+  var targetCol = document.querySelector('.pipeline-col[data-stage="' + newStage + '"]');
+  if (!targetCol) { toast('Stage moved to: ' + newStage); return; }
+  // Move card to new column (append before the select of next card or at end)
+  var title = targetCol.querySelector('.pipeline-col-title');
+  targetCol.appendChild(card);
+  // Update counts
+  document.querySelectorAll('.pipeline-col').forEach(function(col) {
+    var cards = col.querySelectorAll('.lead-card');
+    var countEl = col.querySelector('.pipeline-count');
+    if (countEl) countEl.textContent = cards.length;
+  });
+  toast(card.querySelector('.lead-name').textContent + ' moved to ' + newStage);
+}
+
+function openDetailFor(el, name, phone) {
+  var cardName = name || (el && el.closest('.lead-card') ? el.closest('.lead-card').querySelector('.lead-name').textContent : 'Client');
+  var cardPhone = phone || '';
+  document.querySelector('.client-detail-header h3').textContent = cardName;
+  var phoneEl = document.querySelector('.detail-row .val');
+  if (phoneEl && cardPhone) phoneEl.textContent = cardPhone;
+  document.getElementById('client-detail-overlay').classList.add('open');
+}
+
+// Keep old openDetail for backward compat
+function openDetail() { openDetailFor(null, 'Marcus Thompson', '(404) 555-0211'); }
+
+function filterPipelineView(filter, btn) {
+  document.querySelectorAll('.pipeline-col .lead-card').forEach(function(card) {
+    var stage = card.querySelector('.lead-stage-select') ? card.querySelector('.lead-stage-select').value : '';
+    var archived = ['Declined','Left Review'].includes(stage);
+    if (filter === 'active') card.style.display = archived ? 'none' : '';
+    else if (filter === 'archived') card.style.display = archived ? '' : 'none';
+    else card.style.display = '';
+  });
+  document.querySelectorAll('[onclick*="filterPipelineView"]').forEach(function(b){ b.style.borderColor=''; b.style.color=''; });
+  if (btn) { btn.style.borderColor = 'var(--navy)'; btn.style.color = 'var(--navy)'; }
+}
+
+function addDemoLead() {
+  var name = prompt('Client name:');
+  if (!name || !name.trim()) return;
+  var meta = prompt('Case type (e.g. Auto Accident):') || 'Unknown';
+  var col = document.querySelector('.pipeline-col[data-stage="New Lead"]');
+  if (!col) return;
+  var stages = ['New Lead','Intake Complete','Decision Ready','Accepted','Consult Scheduled','Review Requested','Review: Yes','Review: No','Left Review','Declined'];
+  var today = new Date();
+  var dateStr = (today.getMonth()+1) + '/' + today.getDate();
+  var div = document.createElement('div');
+  div.className = 'lead-card';
+  div.setAttribute('data-lead', name.trim());
+  var nameDiv = document.createElement('div');
+  nameDiv.className = 'lead-name';
+  nameDiv.style.cssText = 'cursor:pointer;color:var(--navy);';
+  nameDiv.textContent = name.trim();
+  nameDiv.onclick = function(){ openDetailFor(null, name.trim(), ''); };
+  var metaDiv = document.createElement('div');
+  metaDiv.className = 'lead-meta';
+  metaDiv.textContent = meta;
+  var dateDiv = document.createElement('div');
+  dateDiv.className = 'lead-meta';
+  dateDiv.textContent = dateStr;
+  var sel = document.createElement('select');
+  sel.className = 'lead-stage-select';
+  sel.style.cssText = 'margin-top:8px;width:100%;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);cursor:pointer;outline:none;';
+  sel.onchange = function(){ moveLead(this); };
+  stages.forEach(function(s) {
+    var opt = document.createElement('option');
+    opt.textContent = s;
+    opt.selected = s === 'New Lead';
+    sel.appendChild(opt);
+  });
+  div.appendChild(nameDiv);
+  div.appendChild(metaDiv);
+  div.appendChild(dateDiv);
+  div.appendChild(sel);
+  col.appendChild(div);
+  var countEl = col.querySelector('.pipeline-count');
+  if (countEl) countEl.textContent = col.querySelectorAll('.lead-card').length;
+  toast(name.trim() + ' added to New Lead.');
+}
+
+// ─── BOOKING FUNCTIONS ────────────────────────────────────────────────────
+function bookingAction(rowId, action) {
+  var statusEl = document.getElementById(rowId + '-status');
+  var actionsEl = document.getElementById(rowId + '-actions');
+  if (!statusEl || !actionsEl) return;
+  if (action === 'no-show') {
+    statusEl.innerHTML = '<span class="pill pill-red">No-Show</span>';
+    actionsEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Follow-up SMS queued in 2 hours</span>';
+    toast('No-show marked. Follow-up SMS will fire in 2 hours.');
+  } else if (action === 'cancel') {
+    statusEl.innerHTML = '<span class="pill pill-gray">Cancelled</span>';
+    actionsEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Cancellation SMS sent</span>';
+    toast('Booking cancelled. Cancellation SMS queued.');
+  } else if (action === 'reschedule') {
+    statusEl.innerHTML = '<span class="pill pill-orange">Reschedule Sent</span>';
+    actionsEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Reschedule link sent via SMS</span>';
+    toast('Reschedule link sent to client via SMS.');
+  } else if (action === 'review') {
+    actionsEl.innerHTML = '<span class="pill pill-green" style="font-size:11px;">Review SMS Sent &#10003;</span>';
+    toast('Review request SMS queued.');
+  } else if (action === 'complete') {
+    statusEl.innerHTML = '<span class="pill pill-green">Completed</span>';
+    var btn = document.createElement('button');
+    btn.className = 'btn btn-success btn-sm';
+    btn.style.cssText = 'font-size:11px;padding:4px 8px;';
+    btn.textContent = '★ Send Review SMS';
+    btn.onclick = function(){ bookingAction(rowId, 'review'); };
+    actionsEl.innerHTML = '';
+    actionsEl.appendChild(btn);
+    toast('Booking marked complete.');
+  }
+}
+
+// ─── INTAKE QUESTION FUNCTIONS ────────────────────────────────────────────
+function addIntakeRow() {
+  var addBtn = document.querySelector('[onclick="addIntakeRow()"]');
+  if (!addBtn) return;
+  var row = document.createElement('div');
+  row.className = 'iq-row';
+  var badge = document.createElement('span');
+  badge.className = 'iq-badge opt';
+  badge.textContent = 'OPT';
+  var inp = document.createElement('input');
+  inp.type = 'text';
+  inp.placeholder = 'Enter your question...';
+  inp.style.cssText = 'flex:1;border:1.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:Outfit,sans-serif;outline:none;';
+  var removeBtn = document.createElement('button');
+  removeBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0 4px;';
+  removeBtn.innerHTML = '&#10005;';
+  removeBtn.onclick = function(){ row.remove(); toast('Question removed.'); };
+  row.appendChild(badge);
+  row.appendChild(inp);
+  row.appendChild(removeBtn);
+  addBtn.closest('div').parentNode.insertBefore(row, addBtn.closest('div'));
+  inp.focus();
+  toast('New optional question added.');
+}
+
+function saveIntakeQuestions() {
+  var questions = document.querySelectorAll('#view-intake .iq-row input');
+  var count = questions.length;
+  toast(count + ' intake question' + (count !== 1 ? 's' : '') + ' saved. AVA will use these on all future calls.');
+}
+
+// ─── TEAM MESSAGES POST ───────────────────────────────────────────────────
+function postDemoMessage() {
+  var input = document.querySelector('#view-messages input[type="text"]');
+  if (!input || !input.value.trim()) { toast('Write a message first.'); return; }
+  var msg = input.value.trim();
+  var feed = document.querySelector('#view-messages .card > div:nth-child(3)');
+  var newNote = document.createElement('div');
+  newNote.className = 'msg-item';
+  var now = new Date();
+  var timeStr = now.toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  newNote.innerHTML = '<div class="msg-author">James Harrison <span style="background:var(--navy);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;margin-left:4px;">NEW</span></div><div class="msg-content">' + msg + '</div><div class="msg-time">' + timeStr + '</div>';
+  if (feed) feed.insertBefore(newNote, feed.firstChild);
+  input.value = '';
+  toast('Note posted to team feed.');
+}
+
+// ─── BUSINESS HOURS TOGGLE ────────────────────────────────────────────────
+function toggleDayHours(checkbox) {
+  var row = checkbox.closest('[style*="gap:14px"]') || checkbox.closest('div[style*="display:flex"]');
+  if (!row) return;
+  var inputs = row.querySelectorAll('input[type="time"]');
+  inputs.forEach(function(inp) {
+    inp.disabled = !checkbox.checked;
+    inp.style.opacity = checkbox.checked ? '1' : '.4';
+  });
+}
+
+// ─── CLIENT OUTREACH SEND ─────────────────────────────────────────────────
+function sendDemoCampaign() {
+  var smsEl = document.getElementById('demo-sms-body');
+  var emailToggle = document.getElementById('demo-email-toggle');
+  var useSMS = true;
+  var useEmail = emailToggle && emailToggle.checked;
+  if (!smsEl || !smsEl.value.trim()) { toast('Write a message first.'); return; }
+  var channels = [];
+  if (useSMS) channels.push('SMS');
+  if (useEmail) channels.push('email');
+  // Add to history table
+  var tbody = document.querySelector('#view-outreach .card:last-child table tbody');
+  if (tbody) {
+    var tr = document.createElement('tr');
+    var today = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    tr.innerHTML = '<td style="font-weight:600;">New Campaign</td><td><span class="pill pill-navy" style="font-size:10px;">Custom</span></td><td style="font-size:12px;">Selected audience</td><td style="font-size:12px;">' + channels.map(function(c){ return c==='SMS'?'&#128172; SMS':'&#9993; Email'; }).join(' ') + '</td><td><span class="pill pill-green">Sent</span></td><td style="font-size:12px;">' + today + '</td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+  }
+  toast('Campaign sent to ' + channels.join(' + ') + '. ' + channels.length + ' channel' + (channels.length>1?'s':'') + ' queued.');
+}
+
+// ─── AVA ADJUSTMENT SUBMIT ────────────────────────────────────────────────
+function submitAVAAdjustment(btn) {
+  var typeEl = document.querySelector('#view-ava select');
+  var descEl = document.querySelector('#view-ava textarea:last-of-type');
+  if (!typeEl || !typeEl.value) { toast('Please select a category.'); return; }
+  if (!descEl || !descEl.value.trim()) { toast('Please describe what you want changed.'); return; }
+  // Add to history
+  var historyWrap = document.querySelector('#view-ava .card:last-child');
+  if (historyWrap) {
+    var historyDiv = document.createElement('div');
+    historyDiv.style.cssText = 'padding:12px 0;border-top:1px solid var(--border);';
+    historyDiv.innerHTML = '<div style="font-size:13px;font-weight:600;">' + typeEl.value + '</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">' + descEl.value.trim() + '</div><div style="display:flex;justify-content:space-between;margin-top:6px;"><span style="font-size:11px;color:var(--muted);">' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + '</span><span class="pill pill-orange" style="font-size:10px;">&#9200; Received</span></div>';
+    historyWrap.appendChild(historyDiv);
+  }
+  typeEl.value = '';
+  descEl.value = '';
+  toast('Request submitted. Aligned Impact will apply your change within 2 business days.');
+}
+
+// ─── LEAD STAGE SELECT CSS ────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  // Style lead-stage-selects on hover
+  document.querySelectorAll('.lead-stage-select').forEach(function(sel) {
+    sel.addEventListener('focus', function(){ this.style.borderColor = 'var(--sky)'; });
+    sel.addEventListener('blur', function(){ this.style.borderColor = 'var(--border)'; });
+  });
+});
+
+
+// ─── CALL QUALITY SCORECARD DATA ─────────────────────────────────────────
+var SCORECARD_DATA = {
+  week: {
+    overall:84, grade:'B', intake:'91%', booking:'78%', escalation:'88%', scored:34,
+    breakdown:[{label:'Intake Completion',desc:'Did AVA collect all required info? Weight: 35%',val:91,grade:'A',color:'var(--green)'},
+               {label:'Booking Conversion',desc:'Did AVA book qualified callers? Weight: 30%',val:78,grade:'B',color:'var(--sky)'},
+               {label:'Escalation Accuracy',desc:'Did AVA handle urgent situations correctly? Weight: 20%',val:88,grade:'A',color:'var(--green)'},
+               {label:'Call Resolution',desc:'Did calls end with a clear next step? Weight: 15%',val:82,grade:'B',color:'var(--sky)'}],
+    trend:[76,79,75,80,82,83,81,84],
+    trendLabels:['Feb 24','Mar 3','Mar 10','Mar 17','Mar 24','Mar 31','Apr 7','Apr 14'],
+    calls:[{name:'Marcus Thompson',date:'Apr 19',dur:'4m 32s',score:92,grade:'A',intake:'100%',booking:'85%',esc:'—'},
+           {name:'Jennifer Liu',date:'Apr 18',dur:'6m 18s',score:88,grade:'B',intake:'95%',booking:'90%',esc:'—'},
+           {name:'Thomas Bell',date:'Apr 17',dur:'8m 41s',score:79,grade:'B',intake:'88%',booking:'—',esc:'95%'},
+           {name:'Tamara Wilson',date:'Apr 16',dur:'5m 12s',score:76,grade:'B',intake:'78%',booking:'80%',esc:'—'},
+           {name:'Unknown Caller',date:'Apr 15',dur:'2m 04s',score:61,grade:'C',intake:'65%',booking:'60%',esc:'—'}]
+  },
+  month: {
+    overall:82, grade:'B', intake:'88%', booking:'75%', escalation:'91%', scored:127,
+    breakdown:[{label:'Intake Completion',desc:'Did AVA collect all required info? Weight: 35%',val:88,grade:'B',color:'var(--sky)'},
+               {label:'Booking Conversion',desc:'Did AVA book qualified callers? Weight: 30%',val:75,grade:'B',color:'var(--sky)'},
+               {label:'Escalation Accuracy',desc:'Did AVA handle urgent situations correctly? Weight: 20%',val:91,grade:'A',color:'var(--green)'},
+               {label:'Call Resolution',desc:'Did calls end with a clear next step? Weight: 15%',val:79,grade:'B',color:'var(--sky)'}],
+    trend:[71,74,73,78,76,80,81,82],
+    trendLabels:['Jan 6','Jan 20','Feb 3','Feb 17','Mar 3','Mar 17','Mar 31','Apr 14'],
+    calls:[{name:'Marcus Thompson',date:'Apr 19',dur:'4m 32s',score:92,grade:'A',intake:'100%',booking:'85%',esc:'—'},
+           {name:'Jennifer Liu',date:'Apr 18',dur:'6m 18s',score:88,grade:'B',intake:'95%',booking:'90%',esc:'—'},
+           {name:'Patricia Moore',date:'Apr 15',dur:'3m 48s',score:83,grade:'B',intake:'90%',booking:'82%',esc:'—'},
+           {name:'Robert Chen',date:'Apr 15',dur:'7m 02s',score:85,grade:'B',intake:'92%',booking:'88%',esc:'—'},
+           {name:'Angela Foster',date:'Apr 16',dur:'3m 55s',score:79,grade:'B',intake:'85%',booking:'76%',esc:'—'},
+           {name:'Thomas Bell',date:'Apr 17',dur:'8m 41s',score:79,grade:'B',intake:'88%',booking:'—',esc:'95%'}]
+  },
+  all: {
+    overall:80, grade:'B', intake:'86%', booking:'73%', escalation:'89%', scored:371,
+    breakdown:[{label:'Intake Completion',desc:'Did AVA collect all required info? Weight: 35%',val:86,grade:'B',color:'var(--sky)'},
+               {label:'Booking Conversion',desc:'Did AVA book qualified callers? Weight: 30%',val:73,grade:'B',color:'var(--sky)'},
+               {label:'Escalation Accuracy',desc:'Did AVA handle urgent situations correctly? Weight: 20%',val:89,grade:'A',color:'var(--green)'},
+               {label:'Call Resolution',desc:'Did calls end with a clear next step? Weight: 15%',val:77,grade:'B',color:'var(--sky)'}],
+    trend:[65,68,70,72,74,76,79,80],
+    trendLabels:['Dec','Jan','Feb','Mar','Mar','Apr','Apr','Apr'],
+    calls:[{name:'Marcus Thompson',date:'Apr 19',dur:'4m 32s',score:92,grade:'A',intake:'100%',booking:'85%',esc:'—'},
+           {name:'Jennifer Liu',date:'Apr 18',dur:'6m 18s',score:88,grade:'B',intake:'95%',booking:'90%',esc:'—'},
+           {name:'Thomas Bell',date:'Apr 17',dur:'8m 41s',score:79,grade:'B',intake:'88%',booking:'—',esc:'95%'},
+           {name:'Linda Hayes',date:'Mar 28',dur:'5m 10s',score:74,grade:'B',intake:'80%',booking:'72%',esc:'—'},
+           {name:'Carlos Mendez',date:'Mar 15',dur:'6m 30s',score:81,grade:'B',intake:'88%',booking:'78%',esc:'—'}]
+  }
+};
+
+var GRADE_CLASS = {A:'grade-a',B:'grade-b',C:'grade-c',D:'grade-d'};
+var GRADE_COLOR = {A:'var(--green)',B:'var(--sky)',C:'var(--warning)',D:'var(--red)'};
+
+function loadScorecard(range, btn) {
+  var d = SCORECARD_DATA[range] || SCORECARD_DATA.week;
+  document.querySelectorAll('[onclick*="loadScorecard"]').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+
+  // Ring
+  var ringFill = document.querySelector('.ring-fill');
+  var ringVal = document.querySelector('.ring-value');
+  var gradeEl = document.querySelector('.score-grade.grade-b, .score-grade.grade-a, .score-grade.grade-c, .score-grade.grade-d, .score-grade');
+  if (ringFill) { var offset = 213.6 - (d.overall/100)*213.6; ringFill.style.strokeDashoffset = offset; var gColor = GRADE_COLOR[d.grade]||'var(--sky)'; ringFill.style.stroke = gColor; }
+  if (ringVal) { ringVal.textContent = d.overall; ringVal.style.color = GRADE_COLOR[d.grade]||'var(--sky)'; }
+  if (gradeEl) { gradeEl.textContent = d.grade; gradeEl.className = 'score-grade ' + (GRADE_CLASS[d.grade]||'grade-b'); }
+
+  // Metrics
+  var mIntake = document.getElementById('metric-intake-val') || document.querySelector('[id="metric-intake"]') || null;
+  var mBook = document.getElementById('metric-booking-val');
+  var mEsc = document.getElementById('metric-esc-val');
+  var mScored = document.getElementById('metric-scored-val');
+  // Update metric cards text
+  var metricCards = document.querySelectorAll('#view-scorecard .card:nth-child(3) > div[style*="grid"] > div');
+  if (metricCards.length >= 4) {
+    var vals = [d.intake, d.booking, d.escalation, d.scored];
+    var colors = [d.breakdown[0].color, d.breakdown[1].color, d.breakdown[2].color, 'var(--navy)'];
+    metricCards.forEach(function(card, i) {
+      var numEl = card.querySelector('[style*="font-family:Fraunces"]');
+      if (numEl && vals[i] !== undefined) { numEl.textContent = vals[i]; numEl.style.color = colors[i]; }
+    });
+  }
+
+  // Breakdown rows
+  var breakdownWrap = document.getElementById('score-breakdown-list');
+  if (breakdownWrap) {
+    var html = '';
+    d.breakdown.forEach(function(b) {
+      html += '<div class="score-metric-row">';
+      html += '<div style="width:28px;"><div class="score-grade ' + (GRADE_CLASS[b.grade]||'grade-b') + '" style="width:28px;height:28px;font-size:11px;">' + b.grade + '</div></div>';
+      html += '<div class="score-metric-label"><div style="font-weight:600;">' + b.label + '</div><div style="font-size:11px;color:var(--muted);">' + b.desc + '</div></div>';
+      html += '<div class="score-metric-bar"><div class="score-metric-fill" style="width:' + b.val + '%;background:' + b.color + ';"></div></div>';
+      html += '<div class="score-metric-val" style="color:' + b.color + ';">' + b.val + '%</div>';
+      html += '</div>';
+    });
+    breakdownWrap.innerHTML = html;
+  }
+
+  // Trend chart
+  var trendWrap = document.getElementById('score-trend-chart');
+  var trendLabels = document.getElementById('score-trend-labels');
+  if (trendWrap) {
+    var max = Math.max.apply(null, d.trend) || 100;
+    var bars = d.trend.map(function(val, i) {
+      var h = Math.round((val/100)*100);
+      var isLast = i === d.trend.length - 1;
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;">' +
+        '<div style="font-size:10px;' + (isLast?'font-weight:700;color:var(--green)':'color:var(--muted)') + ';">' + val + '</div>' +
+        '<div style="width:100%;background:' + (isLast?'var(--green)':'var(--sky)') + ';border-radius:4px 4px 0 0;height:' + h + 'px;' + (isLast?'':'opacity:.8;') + '"></div>' +
+        '</div>';
+    }).join('');
+    trendWrap.innerHTML = bars;
+    trendWrap.style.display = 'flex';
+    trendWrap.style.alignItems = 'flex-end';
+    trendWrap.style.gap = '8px';
+    trendWrap.style.height = '120px';
+    trendWrap.style.paddingBottom = '24px';
+  }
+  if (trendLabels) trendLabels.innerHTML = d.trendLabels.map(function(l,i){ return '<span' + (i===d.trend.length-1?' style="font-weight:600;color:var(--navy);"':'') + '>' + l + '</span>'; }).join('');
+
+  // Per-call table
+  var callTableBody = document.querySelector('#view-scorecard table tbody');
+  if (callTableBody) {
+    var rows = d.calls.map(function(c) {
+      return '<tr><td><strong>' + c.name + '</strong></td><td>' + c.date + '</td><td>' + c.dur + '</td>' +
+        '<td><strong style="color:' + (GRADE_COLOR[c.grade]||'var(--sky)') + ';font-size:15px;">' + c.score + '</strong></td>' +
+        '<td><div class="score-grade ' + (GRADE_CLASS[c.grade]||'grade-b') + '">' + c.grade + '</div></td>' +
+        '<td>' + c.intake + '</td><td>' + c.booking + '</td><td>' + c.esc + '</td></tr>';
+    }).join('');
+    callTableBody.innerHTML = rows;
+  }
+}
+
+// ─── TRANSCRIPT FUNCTIONS ─────────────────────────────────────────────────
+function flagTranscript(btnId, name) {
+  var btn = document.getElementById(btnId);
+  if (!btn) return;
+  var isFlagged = btn.textContent.includes('Flagged');
+  if (isFlagged) {
+    btn.innerHTML = '&#9873; Flag';
+    btn.style.color = '';
+    toast(name + ' transcript unflagged.');
+  } else {
+    btn.innerHTML = '&#9873; Flagged';
+    btn.style.color = 'var(--red)';
+    btn.style.borderColor = 'var(--red)';
+    toast(name + ' transcript flagged for review.');
+  }
+}
+
+function addTranscriptNote(noteId) {
+  var text = prompt('Add a note to this transcript:');
+  if (!text || !text.trim()) return;
+  var noteEl = document.getElementById(noteId);
+  if (noteEl) {
+    noteEl.style.display = 'block';
+    noteEl.innerHTML = '<strong>Note:</strong> ' + text.trim();
+    toast('Note saved to transcript.');
+  }
+}
+
+// ─── ESCALATION NOTE ─────────────────────────────────────────────────────
+function addEscalationNote(wrapId) {
+  var text = prompt('Add a note about this escalation:');
+  if (!text || !text.trim()) return;
+  var wrap = document.getElementById(wrapId);
+  if (wrap) {
+    wrap.style.display = 'block';
+    wrap.innerHTML += (wrap.innerHTML ? '<br>' : '') + '<strong>' + new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) + '</strong> — ' + text.trim();
+    toast('Note saved to this escalation.');
+  }
+}
+
+// ─── ADD BOOKING ─────────────────────────────────────────────────────────
+function addDemoBooking() {
+  var name = prompt('Client name:');
+  if (!name || !name.trim()) return;
+  var phone = prompt('Client phone number:') || '—';
+  var date = prompt('Appointment date (e.g. Apr 25, 2026):') || 'TBD';
+  var time = prompt('Time (e.g. 11:00 AM):') || 'TBD';
+  var assigned = prompt('Assign to (e.g. Sarah Mitchell):') || 'Unassigned';
+  var tbody = document.getElementById('bookings-tbody');
+  if (!tbody) return;
+  var rowId = 'bk-' + Date.now();
+  var tr = document.createElement('tr');
+  tr.id = rowId;
+  // Name cell
+  var td1 = document.createElement('td');
+  var strong = document.createElement('strong');
+  strong.style.cssText = 'cursor:pointer;color:var(--navy);';
+  strong.textContent = name.trim();
+  strong.onclick = (function(n, p){ return function(){ openDetailFor(null, n, p); }; })(name.trim(), phone);
+  var phoneDiv = document.createElement('div');
+  phoneDiv.style.cssText = 'font-size:11px;color:var(--muted);';
+  phoneDiv.textContent = phone;
+  td1.appendChild(strong); td1.appendChild(phoneDiv);
+  // Date, time, assigned cells
+  var td2 = document.createElement('td'); td2.textContent = date;
+  var td3 = document.createElement('td'); td3.textContent = time;
+  var td4 = document.createElement('td'); td4.style.fontSize = '12px'; td4.textContent = assigned;
+  // Status cell
+  var td5 = document.createElement('td'); td5.id = rowId + '-status';
+  td5.innerHTML = '<span class="pill pill-blue">Scheduled</span>';
+  // Actions cell
+  var td6 = document.createElement('td'); td6.id = rowId + '-actions';
+  td6.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;';
+  [['No-Show','no-show-btn','no-show'],['Reschedule','btn btn-outline btn-sm','reschedule'],['Cancel','btn btn-danger btn-sm','cancel']].forEach(function(item) {
+    var btn = document.createElement('button');
+    btn.className = item[1]; btn.style.cssText = 'font-size:11px;padding:3px 8px;'; btn.textContent = item[0];
+    btn.onclick = (function(rid, act){ return function(){ bookingAction(rid, act); }; })(rowId, item[2]);
+    td6.appendChild(btn);
+  });
+  [td1,td2,td3,td4,td5,td6].forEach(function(td){ tr.appendChild(td); });
+  tbody.insertBefore(tr, tbody.firstChild);
+  toast(name.trim() + ' booking added.');
+}
+
+// ─── NO-SHOW QUEUE ACTIONS ────────────────────────────────────────────────
+function noshowAction(rowId, action, name) {
+  var statusEl = document.getElementById(rowId + '-status');
+  var actionsEl = document.getElementById(rowId + '-actions');
+  if (!statusEl || !actionsEl) return;
+  if (action === 'sms') {
+    statusEl.innerHTML = '<span class="pill pill-green">SMS Sent</span>';
+    actionsEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Follow-up sent ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) + '</span>';
+    toast('Follow-up SMS sent to ' + name + '. Message delivered.');
+  } else if (action === 'called') {
+    statusEl.innerHTML = '<span class="pill pill-blue">Manually Contacted</span>';
+    actionsEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Manual call logged. Auto SMS cancelled.</span>';
+    toast('Manual call logged for ' + name + '. Pending auto-SMS cancelled.');
+  } else if (action === 'resolved') {
+    statusEl.innerHTML = '<span class="pill pill-gray">Resolved</span>';
+    actionsEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Marked resolved.</span>';
+    toast(name + ' marked resolved.');
+  }
+}
+
+// ─── ADD SOURCE ───────────────────────────────────────────────────────────
+function addDemoSource() {
+  var name = prompt('Enter source name (e.g. Instagram, Yelp, Radio Ad):');
+  if (!name || !name.trim()) return;
+  var sourceList = document.querySelector('#view-sources .source-list');
+  if (!sourceList) return;
+  var row = document.createElement('div');
+  row.className = 'source-row';
+  var pct = Math.floor(Math.random() * 8) + 1;
+  row.innerHTML = '<div class="source-name">' + name.trim() + '</div>' +
+    '<div class="source-bar-wrap"><div class="source-bar" style="width:' + pct + '%;background:var(--orange);"></div></div>' +
+    '<div style="width:40px;text-align:right;font-size:13px;color:var(--muted);">' + Math.floor(Math.random()*15+1) + '</div>' +
+    '<div class="source-pct" style="color:var(--orange);">' + pct + '%</div>';
+  sourceList.appendChild(row);
+  toast('"' + name.trim() + '" added as a lead source.');
+}
+
+// ─── ADD TASK ─────────────────────────────────────────────────────────────
+function addDemoTask() {
+  var title = prompt('Task title:');
+  if (!title || !title.trim()) return;
+  var assignee = prompt('Assign to (e.g. James Harrison):') || 'Unassigned';
+  var due = prompt('Due date (e.g. Apr 25):') || 'No due date';
+  var list = document.getElementById('task-list');
+  if (!list) return;
+  var row = document.createElement('div');
+  row.className = 'task-row';
+  row.setAttribute('data-status','pending');
+  var check = document.createElement('div');
+  check.className = 'task-check';
+  check.onclick = function(){ cycleTask(check); };
+  var text = document.createElement('div');
+  text.className = 'task-text';
+  text.innerHTML = title.trim() + '<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Assigned to ' + assignee + ' &middot; Due ' + due + '</span>';
+  var pill = document.createElement('span');
+  pill.className = 'pill pill-orange';
+  pill.style.cssText = 'font-size:10px;white-space:nowrap;';
+  pill.textContent = 'Pending';
+  row.appendChild(check);
+  row.appendChild(text);
+  row.appendChild(pill);
+  list.insertBefore(row, list.firstChild);
+  toast('Task added.');
+}
+
+// ─── STAFF INVITE ─────────────────────────────────────────────────────────
+function openInviteModal() {
+  var modal = document.getElementById('invite-modal');
+  if (modal) { modal.style.display = 'flex'; document.getElementById('invite-name').focus(); }
+}
+function closeInviteModal() {
+  var modal = document.getElementById('invite-modal');
+  if (modal) modal.style.display = 'none';
+}
+function sendDemoInvite() {
+  var name = document.getElementById('invite-name').value.trim();
+  var email = document.getElementById('invite-email').value.trim();
+  var roleEl = document.querySelector('input[name="invite-role"]:checked');
+  var roleVal = roleEl ? roleEl.value : 'employee';
+  if (!name) { alert('Please enter a name.'); return; }
+  if (!email) { alert('Please enter an email address.'); return; }
+  var tbody = document.querySelector('#view-staff table tbody');
+  if (tbody) {
+    var tr = document.createElement('tr');
+    var td1 = document.createElement('td');
+    td1.innerHTML = '<strong>' + name + '</strong>';
+    var td2 = document.createElement('td');
+    td2.innerHTML = '<span class="pill ' + (roleVal==='manager'?'pill-navy':'pill-blue') + '">' + (roleVal==='manager'?'Manager':'Employee') + '</span>';
+    var td3 = document.createElement('td');
+    td3.style.fontSize = '12px'; td3.textContent = email;
+    var td4 = document.createElement('td');
+    td4.innerHTML = '<span class="pill pill-orange">Invite Sent</span>';
+    var td5 = document.createElement('td');
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-outline btn-sm'; removeBtn.style.fontSize = '11px'; removeBtn.textContent = 'Remove';
+    removeBtn.onclick = function(){ tr.remove(); toast('Staff member removed.'); };
+    td5.appendChild(removeBtn);
+    [td1,td2,td3,td4,td5].forEach(function(td){ tr.appendChild(td); });
+    tbody.appendChild(tr);
+  }
+  closeInviteModal();
+  document.getElementById('invite-name').value = '';
+  document.getElementById('invite-email').value = '';
+  toast('Invite sent to ' + name + ' as ' + roleVal + '.');
+}
+
+
+// ─── REPORT ISSUE ─────────────────────────────────────────────────────────
+function openReportModal() {
+  var overlay = document.getElementById('report-modal-overlay');
+  if (overlay) { overlay.classList.add('open'); }
+}
+function closeReportModal() {
+  var overlay = document.getElementById('report-modal-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+function selectUrgency(btn) {
+  document.querySelectorAll('.urgency-pill').forEach(function(p){ p.className = 'urgency-pill'; });
+  btn.classList.add('sel-' + btn.getAttribute('data-urgency'));
+}
+function submitReport() {
+  var section = (document.getElementById('report-section') || {}).value;
+  var desc = ((document.getElementById('report-description') || {}).value || '').trim();
+  var urgencyEl = document.querySelector('.urgency-pill[class*="sel-"]');
+  var urgency = urgencyEl ? urgencyEl.getAttribute('data-urgency') : 'medium';
+  if (!section) { toast('Please select which section this is about.'); return; }
+  if (!desc) { toast('Please describe the issue.'); return; }
+  var alertEl = document.getElementById('report-alert');
+  if (alertEl) {
+    alertEl.innerHTML = '<div style="background:#edf7f1;border:1px solid #b8e0c8;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);">Report sent. The Aligned Impact team will follow up at james@harrisonandcole.com. ' + (urgency==='urgent'||urgency==='high'?'High urgency issues are reviewed within a few hours.':'We will be in touch shortly.') + '</div>';
+  }
+  if (document.getElementById('report-description')) document.getElementById('report-description').value = '';
+  document.querySelectorAll('.urgency-pill').forEach(function(p){ p.className = 'urgency-pill'; });
+}
+
+// Init
+showCVChart('hourly');
+</script>
+</body>
+</html>
