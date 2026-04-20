@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Employee Dashboard Demo | Aligned Impact</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1b4f8a;--orange:#f5a623;--sky:#29a8e0;--cream:#faf8f4;
+  --cream2:#f0ede7;--text:#1a1a1a;--muted:#6b6659;--border:#ddd8ce;
+  --white:#ffffff;--green:#1b7a4a;--red:#c0392b;--warning:#d69e2e;--sidebar-w:240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Outfit",sans-serif;font-size:15px;line-height:1.6;background:var(--cream);color:var(--text);display:flex;min-height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto;transition:transform .25s ease;}
+.sidebar-brand{padding:20px;border-bottom:1px solid rgba(255,255,255,.1);}
+.brand-name{font-family:"Fraunces",serif;font-size:20px;font-weight:600;color:#fff;}
+.brand-sub{font-size:11px;color:var(--orange);font-weight:500;letter-spacing:.8px;text-transform:uppercase;margin-top:2px;}
+.tenant-name{font-size:13px;color:rgba(255,255,255,.6);margin-top:6px;}
+.sidebar-nav{flex:1;padding:12px 0;}
+.nav-section{padding:8px 20px 4px;font-size:10px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.65);cursor:pointer;transition:all .15s;font-size:13px;border:none;background:none;width:100%;text-align:left;font-family:"Outfit",sans-serif;}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:rgba(245,166,35,.15);color:var(--orange);}
+.nav-icon{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.nav-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;font-size:10px;font-weight:700;margin-left:auto;background:var(--orange);color:#fff;}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1);}
+.user-info{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.user-avatar{width:32px;height:32px;background:var(--orange);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0;}
+.user-email{font-size:12px;color:rgba(255,255,255,.6);}
+.user-role{font-size:11px;color:rgba(255,255,255,.4);}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;display:block;opacity:0;pointer-events:none;transition:opacity .25s;}
+.sidebar-overlay.visible{opacity:1;pointer-events:all;}
+.hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:6px;margin-right:8px;}
+.hamburger span{display:block;width:20px;height:2px;background:var(--navy);border-radius:2px;transition:all .2s;}
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.demo-banner{background:linear-gradient(135deg,rgba(245,166,35,.15),rgba(245,166,35,.08));border-bottom:2px solid rgba(245,166,35,.4);padding:10px 28px;font-size:12px;color:#8a5a00;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.demo-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;display:inline-block;margin-right:6px;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:"Fraunces",serif;font-size:20px;font-weight:600;color:var(--navy);}
+.service-badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(56,161,105,0.1);color:var(--green);border:1px solid rgba(56,161,105,0.2);}
+.content{padding:28px;flex:1;}
+.view{display:none;}
+.view.active{display:block;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+.card-title{font-family:"Fraunces",serif;font-size:17px;font-weight:600;color:var(--navy);}
+.btn{padding:8px 18px;border-radius:8px;font-family:"Outfit",sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:#163f6e;}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--navy);color:var(--navy);}
+.btn-success{background:#edf7f1;color:var(--green);border:1.5px solid #b8e0c8;}
+.btn-danger{background:#fdf0ef;color:var(--red);border:1.5px solid #f5c6c2;}
+.btn-sky{background:rgba(41,168,224,.1);color:#0d5f80;border:1px solid rgba(41,168,224,.2);}
+.btn-warning{background:#fffbeb;color:#8a5a00;border:1px solid #fbd38d;}
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.pill-green{background:#edf7f1;color:var(--green);}
+.pill-blue{background:rgba(41,168,224,.1);color:#0d5f80;}
+.pill-orange{background:rgba(245,166,35,.12);color:#8a5a00;}
+.pill-red{background:#fdf0ef;color:var(--red);}
+.pill-gray{background:var(--cream2);color:var(--muted);}
+.pill-navy{background:rgba(27,79,138,.08);color:var(--navy);}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);background:var(--cream);}
+td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(250,248,244,.6);}
+.stat-mini{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
+.stat-mini-val{font-family:"Fraunces",serif;font-size:26px;font-weight:600;color:var(--navy);}
+.stat-mini-label{font-size:11px;color:var(--muted);margin-top:3px;}
+.task-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.task-row:last-child{border-bottom:none;}
+.task-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.task-check.done{background:var(--navy);border-color:var(--navy);color:#fff;}
+.task-check.in-prog{background:#fff8e6;border-color:var(--warning);color:var(--warning);}
+.task-text{flex:1;font-size:13px;}
+.task-text.done{text-decoration:line-through;color:var(--muted);}
+.msg-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.msg-item:last-child{border-bottom:none;}
+.msg-author{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:3px;}
+.msg-content{font-size:13px;color:var(--text);line-height:1.5;}
+.msg-time{font-size:11px;color:var(--muted);margin-top:3px;}
+.perf-card{background:var(--cream);border-radius:10px;padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.perf-label{font-size:13px;color:var(--muted);}
+.perf-val{font-family:"Fraunces",serif;font-size:22px;font-weight:600;color:var(--navy);}
+.time-tab{background:none;border:none;padding:6px 14px;border-radius:7px;font-family:"Outfit",sans-serif;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .15s;}
+.time-tab.active{background:var(--white);color:var(--navy);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.coming-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;}
+.coming-card-title{font-size:14px;font-weight:700;color:var(--navy);}
+.coming-card-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.badge-coming{background:#fff8e6;color:#8a5a00;border:1px solid #fbd38d;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.feedback-btn{background:none;border:1px solid var(--border);color:var(--navy);padding:5px 12px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:"Outfit",sans-serif;}
+.feedback-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+/* Report issue */
+.report-fab{position:fixed;bottom:24px;right:24px;z-index:200;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-family:"Outfit",sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(27,79,138,.35);transition:all .15s;}
+.report-fab:hover{background:#163f6e;transform:translateY(-2px);}
+.report-fab .fab-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite;}
+.report-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;}
+.report-modal-overlay.open{display:flex;}
+.report-modal{background:var(--white);border-radius:14px;padding:28px;width:100%;max-width:480px;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.report-modal h3{font-family:"Fraunces",serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.report-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;}
+.report-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:"Outfit",sans-serif;outline:none;}
+.urgency-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.urgency-pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:var(--cream);color:var(--muted);}
+.urgency-pill.sel-low{border-color:var(--green);background:#edf7f1;color:var(--green);}
+.urgency-pill.sel-medium{border-color:var(--sky);background:rgba(41,168,224,.1);color:#0d5f80;}
+.urgency-pill.sel-high{border-color:var(--orange);background:rgba(245,166,35,.12);color:#8a5a00;}
+.urgency-pill.sel-urgent{border-color:var(--red);background:#fdf0ef;color:var(--red);}
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay.visible{opacity:1;pointer-events:all;}
+  .main{margin-left:0;}
+  .hamburger{display:flex;}
+  .content{padding:14px;}
+  .card{padding:16px;overflow-x:auto;}
+  table{min-width:480px;}
+  input,select,textarea{font-size:16px !important;}
+  .report-fab{bottom:16px;right:16px;padding:8px 14px;font-size:12px;}
+  [style*="grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr) !important;}
+  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important;}
+  .demo-banner{padding:8px 16px;}
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">Aligned Impact</div>
+    <div class="brand-sub">Employee Dashboard</div>
+    <div class="tenant-name">Harrison and Cole LLP</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Today</div>
+    <button class="nav-item active" data-view="view-today"><span class="nav-icon">&#9728;</span> Today</button>
+    <div class="nav-section">My Work</div>
+    <button class="nav-item" data-view="view-bookings"><span class="nav-icon">&#128197;</span> My Bookings</button>
+    <button class="nav-item" data-view="view-leads"><span class="nav-icon">&#128101;</span> My Clients</button>
+    <button class="nav-item" data-view="view-calls"><span class="nav-icon">&#9742;</span> My Calls</button>
+    <button class="nav-item" data-view="view-tasks"><span class="nav-icon">&#9989;</span> My Tasks<span class="nav-badge">2</span></button>
+    <div class="nav-section">Team</div>
+    <button class="nav-item" data-view="view-messages"><span class="nav-icon">&#128172;</span> Team Messages<span class="nav-badge">1</span></button>
+    <div class="nav-section">Performance</div>
+    <button class="nav-item" data-view="view-performance"><span class="nav-icon">&#9733;</span> My Stats</button>
+    <div class="nav-section">Settings</div>
+    <button class="nav-item" data-view="view-profile"><span class="nav-icon">&#9881;</span> My Profile</button>
+    <button class="nav-item" data-view="view-coming"><span class="nav-icon">&#128640;</span> What's Coming</button>
+  </nav>
+  <div class="sidebar-footer">
+    <button onclick="openReportModal()" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);padding:8px 14px;border-radius:8px;font-family:Outfit,sans-serif;font-size:12px;font-weight:500;cursor:pointer;width:100%;margin-bottom:12px;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+      <span style="font-size:14px;">&#128172;</span> Report an Issue
+    </button>
+    <div class="user-info">
+      <div class="user-avatar">S</div>
+      <div>
+        <div class="user-email">sarah@harrisonandcole.com</div>
+        <div class="user-role">Employee</div>
+      </div>
+    </div>
+    <a href="../index.html" style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.4);font-size:12px;text-decoration:none;">&#8592; Back to site</a>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileNav()"></div>
+
+<main class="main">
+  <div class="demo-banner">
+    <div style="display:flex;align-items:center;gap:6px;font-weight:600;"><div class="demo-dot"></div>Demo Mode — Sarah Mitchell &nbsp;·&nbsp; Employee, Harrison and Cole LLP</div>
+    <div style="font-size:12px;color:var(--muted);">All data is simulated &nbsp;·&nbsp; <a href="../index.html" style="color:var(--navy);font-weight:600;">Learn more &#8594;</a></div>
+  </div>
+  <div class="topbar">
+    <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()" aria-label="Open navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topbar-title" id="page-title">Today</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="service-badge">&#128222; AVA Active</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- TODAY -->
+    <div class="view active" id="view-today">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Monday, April 20, 2026 &nbsp;·&nbsp; Sarah Mitchell</div>
+
+      <!-- Quick stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div class="stat-mini"><div class="stat-mini-val" id="t-bookings">3</div><div class="stat-mini-label">Appointments Today</div></div>
+        <div class="stat-mini"><div class="stat-mini-val c-orange" id="t-tasks" style="color:var(--orange);">2</div><div class="stat-mini-label">Tasks Due Today</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" id="t-leads" style="color:var(--sky);">8</div><div class="stat-mini-label">My Clients</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" id="t-calls" style="color:var(--green);">24</div><div class="stat-mini-label">Calls This Month</div></div>
+      </div>
+
+      <!-- SMS note -->
+      <div style="background:rgba(41,168,224,0.06);border:1px solid rgba(41,168,224,0.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--navy);line-height:1.6;">
+        &#128172; <strong>Actions fire SMS automatically.</strong> <span style="color:var(--muted);">Cancel a booking before calling if you plan to handle it manually — this stops the auto-SMS from firing.</span>
+      </div>
+
+      <!-- Today's schedule -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Your Schedule Today</div>
+          <button class="btn btn-outline btn-sm" onclick="switchView('view-bookings')">All Bookings</button>
+        </div>
+        <div id="today-schedule">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;">
+            <div><div style="font-size:14px;font-weight:600;">Marcus Thompson</div><div style="font-size:12px;color:var(--muted);">10:00 AM &nbsp;·&nbsp; Auto Accident consult</div></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span class="pill pill-blue">Scheduled</span>
+              <button class="btn btn-success btn-sm" style="font-size:11px;" onclick="todayComplete(this,'Marcus Thompson')">&#10003; Complete</button>
+              <button class="btn btn-warning btn-sm" style="font-size:11px;" onclick="todayNoShow(this,'Marcus Thompson')">No-Show</button>
+              <button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="todayReschedule('Marcus Thompson')">Reschedule</button>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;">
+            <div><div style="font-size:14px;font-weight:600;">Jennifer Liu</div><div style="font-size:12px;color:var(--muted);">2:00 PM &nbsp;·&nbsp; Slip and fall consult</div></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span class="pill pill-blue">Scheduled</span>
+              <button class="btn btn-success btn-sm" style="font-size:11px;" onclick="todayComplete(this,'Jennifer Liu')">&#10003; Complete</button>
+              <button class="btn btn-warning btn-sm" style="font-size:11px;" onclick="todayNoShow(this,'Jennifer Liu')">No-Show</button>
+              <button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="todayReschedule('Jennifer Liu')">Reschedule</button>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;flex-wrap:wrap;gap:8px;">
+            <div><div style="font-size:14px;font-weight:600;">Robert Chen</div><div style="font-size:12px;color:var(--muted);">4:00 PM &nbsp;·&nbsp; Premises liability review</div></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span class="pill pill-blue">Scheduled</span>
+              <button class="btn btn-success btn-sm" style="font-size:11px;" onclick="todayComplete(this,'Robert Chen')">&#10003; Complete</button>
+              <button class="btn btn-warning btn-sm" style="font-size:11px;" onclick="todayNoShow(this,'Robert Chen')">No-Show</button>
+              <button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="todayReschedule('Robert Chen')">Reschedule</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasks due today -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Tasks Due Today</div>
+          <button class="btn btn-outline btn-sm" onclick="switchView('view-tasks')">All Tasks</button>
+        </div>
+        <div>
+          <div class="task-row" id="today-task-1">
+            <div class="task-check" onclick="cycleTask(this,'today-task-1')"></div>
+            <div class="task-text">Request medical records for Jennifer Liu consult<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Due today &nbsp;·&nbsp; Assigned by James Harrison</span></div>
+            <span class="pill pill-orange" style="font-size:10px;white-space:nowrap;">Pending</span>
+          </div>
+          <div class="task-row" id="today-task-2">
+            <div class="task-check in-prog" onclick="cycleTask(this,'today-task-2')">&#9654;</div>
+            <div class="task-text">Follow up with Marcus Thompson re: ER records<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Due today &nbsp;·&nbsp; In progress</span></div>
+            <span class="pill pill-blue" style="font-size:10px;white-space:nowrap;">In Progress</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY BOOKINGS -->
+    <div class="view" id="view-bookings">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <div class="stat-mini"><div class="stat-mini-val">4</div><div class="stat-mini-label">Upcoming</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:var(--green);">18</div><div class="stat-mini-label">Completed</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:var(--red);">1</div><div class="stat-mini-label">No-Shows</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:var(--orange);">1</div><div class="stat-mini-label">Rescheduled</div></div>
+      </div>
+      <div style="background:rgba(41,168,224,0.06);border:1px solid rgba(41,168,224,0.2);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.7;">
+        <strong style="color:var(--navy);">&#128172; Automated SMS actions:</strong>
+        <span style="color:var(--muted);">Cancelling queues a cancellation SMS. Rescheduling sends a booking link. Marking no-show starts the follow-up timer. Marking complete triggers the review request SMS if automation is on. Cancel pending SMS before handling manually.</span>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">My Bookings</div>
+          <select class="btn btn-outline btn-sm" style="padding:5px 10px;font-size:12px;" onchange="filterBookings(this.value)">
+            <option value="upcoming">Upcoming</option>
+            <option value="all">All</option>
+            <option value="completed">Completed</option>
+            <option value="no_show">No-Shows</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Client</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="bookings-tbody">
+            <tr id="bk-e1"><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Marcus Thompson','Auto Accident','(404) 555-0211')">Marcus Thompson</strong><div style="font-size:11px;color:var(--muted);">(404) 555-0211</div></td><td>Apr 20</td><td>10:00 AM</td><td id="bk-e1-st"><span class="pill pill-blue">Scheduled</span></td><td id="bk-e1-ac" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="btn btn-success btn-sm" style="font-size:11px;" onclick="bookingAct('bk-e1','complete')">&#10003; Complete</button><button style="background:#fff8e6;color:#8a5a00;border:1px solid #fbd38d;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;" onclick="bookingAct('bk-e1','noshow')">No-Show</button><button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="bookingAct('bk-e1','reschedule')">Reschedule</button><button class="btn btn-danger btn-sm" style="font-size:11px;" onclick="bookingAct('bk-e1','cancel')">Cancel</button></td></tr>
+            <tr id="bk-e2"><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Jennifer Liu','Slip and Fall','(770) 555-0198')">Jennifer Liu</strong><div style="font-size:11px;color:var(--muted);">(770) 555-0198</div></td><td>Apr 20</td><td>2:00 PM</td><td id="bk-e2-st"><span class="pill pill-blue">Scheduled</span></td><td id="bk-e2-ac" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="btn btn-success btn-sm" style="font-size:11px;" onclick="bookingAct('bk-e2','complete')">&#10003; Complete</button><button style="background:#fff8e6;color:#8a5a00;border:1px solid #fbd38d;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;" onclick="bookingAct('bk-e2','noshow')">No-Show</button><button class="btn btn-outline btn-sm" style="font-size:11px;" onclick="bookingAct('bk-e2','reschedule')">Reschedule</button></td></tr>
+            <tr id="bk-e3"><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Robert Chen','Premises Liability','(404) 555-0589')">Robert Chen</strong><div style="font-size:11px;color:var(--muted);">(404) 555-0589</div></td><td>Apr 20</td><td>4:00 PM</td><td id="bk-e3-st"><span class="pill pill-blue">Scheduled</span></td><td id="bk-e3-ac" style="display:flex;gap:4px;flex-wrap:wrap;"><button class="btn btn-success btn-sm" style="font-size:11px;" onclick="bookingAct('bk-e3','complete')">&#10003; Complete</button><button style="background:#fff8e6;color:#8a5a00;border:1px solid #fbd38d;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;" onclick="bookingAct('bk-e3','noshow')">No-Show</button></td></tr>
+            <tr id="bk-e4"><td><strong>Sandra Lee</strong><div style="font-size:11px;color:var(--muted);">(678) 555-0301</div></td><td>Apr 14</td><td>9:00 AM</td><td id="bk-e4-st"><span class="pill pill-green">Completed</span></td><td id="bk-e4-ac"><button class="btn btn-success btn-sm" style="font-size:11px;" onclick="bookingAct('bk-e4','review')">&#9733; Send Review SMS</button></td></tr>
+            <tr id="bk-e5"><td><strong>Kevin James</strong><div style="font-size:11px;color:var(--muted);">(770) 555-0490</div></td><td>Apr 13</td><td>3:00 PM</td><td id="bk-e5-st"><span class="pill pill-red">No-Show</span></td><td id="bk-e5-ac"><span style="font-size:11px;color:var(--muted);">Follow-up SMS sent</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- MY CLIENTS (Leads) -->
+    <div class="view" id="view-leads">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">My Clients</div>
+          <span style="font-size:13px;color:var(--muted);">8 assigned to you</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Clients assigned to you by the manager or captured by AVA and routed to your queue. Use the stage dropdown to move them forward. Click a name to open their full profile.</p>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Name</th><th>Case Type</th><th>Phone</th><th>Stage</th><th>Added</th></tr></thead>
+          <tbody>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Marcus Thompson','Auto Accident','(404) 555-0211')">Marcus Thompson</strong></td><td>Auto Accident</td><td>(404) 555-0211</td><td><select class="stage-sel" onchange="updateStage(this,'Marcus Thompson')" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);outline:none;"><option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option selected>Consult Scheduled</option><option>Accepted</option><option>Review Requested</option><option>Declined</option></select></td><td style="font-size:12px;color:var(--muted);">Apr 19</td></tr>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Jennifer Liu','Slip and Fall','(770) 555-0198')">Jennifer Liu</strong></td><td>Slip and Fall</td><td>(770) 555-0198</td><td><select class="stage-sel" onchange="updateStage(this,'Jennifer Liu')" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);outline:none;"><option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option selected>Consult Scheduled</option><option>Accepted</option><option>Review Requested</option><option>Declined</option></select></td><td style="font-size:12px;color:var(--muted);">Apr 18</td></tr>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('David Rodriguez','Workplace Injury','(404) 555-0445')">David Rodriguez</strong></td><td>Workplace Injury</td><td>(404) 555-0445</td><td><select class="stage-sel" onchange="updateStage(this,'David Rodriguez')" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);outline:none;"><option>New Lead</option><option selected>Intake Complete</option><option>Decision Ready</option><option>Consult Scheduled</option><option>Accepted</option><option>Review Requested</option><option>Declined</option></select></td><td style="font-size:12px;color:var(--muted);">Apr 17</td></tr>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Tamara Wilson','Auto Accident','(404) 555-0312')">Tamara Wilson</strong></td><td>Auto Accident</td><td>(404) 555-0312</td><td><select class="stage-sel" onchange="updateStage(this,'Tamara Wilson')" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);outline:none;"><option>New Lead</option><option>Intake Complete</option><option selected>Decision Ready</option><option>Consult Scheduled</option><option>Accepted</option><option>Review Requested</option><option>Declined</option></select></td><td style="font-size:12px;color:var(--muted);">Apr 16</td></tr>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Robert Chen','Premises Liability','(404) 555-0589')">Robert Chen</strong></td><td>Premises Liability</td><td>(404) 555-0589</td><td><select class="stage-sel" onchange="updateStage(this,'Robert Chen')" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);outline:none;"><option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Consult Scheduled</option><option selected>Accepted</option><option>Review Requested</option><option>Declined</option></select></td><td style="font-size:12px;color:var(--muted);">Apr 15</td></tr>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Sandra Lee','Workplace Injury','(678) 555-0301')">Sandra Lee</strong></td><td>Workplace Injury</td><td>(678) 555-0301</td><td><select class="stage-sel" onchange="updateStage(this,'Sandra Lee')" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;font-family:Outfit,sans-serif;background:var(--cream);outline:none;"><option>New Lead</option><option>Intake Complete</option><option>Decision Ready</option><option>Consult Scheduled</option><option>Accepted</option><option selected>Review Requested</option><option>Declined</option></select></td><td style="font-size:12px;color:var(--muted);">Apr 12</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- MY CALLS -->
+    <div class="view" id="view-calls">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">My Calls</div>
+          <span style="font-size:13px;color:var(--muted);">24 this month</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Calls handled by AVA that were assigned to you or involved your clients. Flag calls that need follow-up.</p>
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Caller</th><th>Time</th><th>Duration</th><th>Outcome</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Marcus Thompson','Auto Accident','(404) 555-0211')">Marcus Thompson</strong><div style="font-size:11px;color:var(--muted);">(404) 555-0211</div></td><td style="font-size:12px;">Apr 19, 10:14 AM</td><td style="font-size:12px;">4m 32s</td><td><span class="pill pill-green">Lead Captured</span></td><td><button class="btn btn-outline btn-sm" style="font-size:11px;" id="flag-1" onclick="flagCall(this)">&#9873; Flag</button></td></tr>
+            <tr><td><strong style="cursor:pointer;color:var(--navy);" onclick="openClientPanel('Jennifer Liu','Slip and Fall','(770) 555-0198')">Jennifer Liu</strong><div style="font-size:11px;color:var(--muted);">(770) 555-0198</div></td><td style="font-size:12px;">Apr 18, 2:45 PM</td><td style="font-size:12px;">6m 18s</td><td><span class="pill pill-green">Appt Booked</span></td><td><button class="btn btn-outline btn-sm" style="font-size:11px;" id="flag-2" onclick="flagCall(this)">&#9873; Flag</button></td></tr>
+            <tr><td><strong>David Rodriguez</strong><div style="font-size:11px;color:var(--muted);">(404) 555-0445</div></td><td style="font-size:12px;">Apr 18, 11:30 AM</td><td style="font-size:12px;">5m 04s</td><td><span class="pill pill-green">Lead Captured</span></td><td><button class="btn btn-outline btn-sm" style="font-size:11px;" id="flag-3" onclick="flagCall(this)">&#9873; Flag</button></td></tr>
+            <tr><td><strong>Tamara Wilson</strong><div style="font-size:11px;color:var(--muted);">(404) 555-0312</div></td><td style="font-size:12px;">Apr 16, 1:00 PM</td><td style="font-size:12px;">5m 12s</td><td><span class="pill pill-green">Lead Captured</span></td><td><button class="btn btn-outline btn-sm" style="font-size:11px;" id="flag-4" onclick="flagCall(this)">&#9873; Flag</button></td></tr>
+            <tr><td><strong>Sandra Lee</strong><div style="font-size:11px;color:var(--muted);">(678) 555-0301</div></td><td style="font-size:12px;">Apr 14, 9:15 AM</td><td style="font-size:12px;">3m 48s</td><td><span class="pill pill-green">Appt Booked</span></td><td><button class="btn btn-outline btn-sm" style="font-size:11px;" id="flag-5" onclick="flagCall(this)">&#9873; Flag</button></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- MY TASKS -->
+    <div class="view" id="view-tasks">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">My Tasks</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm" style="border-color:var(--navy);color:var(--navy);" onclick="filterTasks('all',this)">All</button>
+            <button class="btn btn-outline btn-sm" onclick="filterTasks('pending',this)">Pending</button>
+            <button class="btn btn-outline btn-sm" onclick="filterTasks('inprog',this)">In Progress</button>
+            <button class="btn btn-outline btn-sm" onclick="filterTasks('done',this)">Complete</button>
+            <button class="btn btn-primary btn-sm" onclick="addTask()">+ Add Task</button>
+          </div>
+        </div>
+        <div id="task-list">
+          <div class="task-row" data-status="pending" id="t1"><div class="task-check" onclick="cycleTask(this,'t1')"></div><div class="task-text">Request medical records for Jennifer Liu<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Assigned by James Harrison &nbsp;·&nbsp; Due Apr 20</span></div><span class="pill pill-orange" style="font-size:10px;white-space:nowrap;" id="t1-pill">Pending</span></div>
+          <div class="task-row" data-status="inprog" id="t2"><div class="task-check in-prog" onclick="cycleTask(this,'t2')">&#9654;</div><div class="task-text">Follow up with Marcus Thompson re: ER records<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Assigned by Sarah Mitchell &nbsp;·&nbsp; Due Apr 20</span></div><span class="pill pill-blue" style="font-size:10px;white-space:nowrap;" id="t2-pill">In Progress</span></div>
+          <div class="task-row" data-status="pending" id="t3"><div class="task-check" onclick="cycleTask(this,'t3')"></div><div class="task-text">Review Tamara Wilson intake notes before decision meeting<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Self-assigned &nbsp;·&nbsp; Due Apr 22</span></div><span class="pill pill-orange" style="font-size:10px;white-space:nowrap;" id="t3-pill">Pending</span></div>
+          <div class="task-row" data-status="done" id="t4"><div class="task-check done" onclick="cycleTask(this,'t4')">&#10003;</div><div class="task-text done">Send onboarding email to Robert Chen<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Completed Apr 15</span></div><span class="pill pill-green" style="font-size:10px;white-space:nowrap;" id="t4-pill">Complete</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM MESSAGES -->
+    <div class="view" id="view-messages">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Team Messages</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Notes from your manager and teammates. Post updates, questions, or progress reports here for the whole team to see.</p>
+        <div id="messages-feed">
+          <div class="msg-item">
+            <div class="msg-author">James Harrison <span style="background:var(--orange);color:#fff;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:700;margin-left:4px;">NEW</span></div>
+            <div class="msg-content">Reminder — follow up with all April no-shows by end of week. Kevin James and Angela Foster still haven't rescheduled.</div>
+            <div class="msg-time">Apr 17, 11:00 AM</div>
+          </div>
+          <div class="msg-item">
+            <div class="msg-author">You (Sarah Mitchell)</div>
+            <div class="msg-content">Jennifer Liu's file is ready for the Apr 20 consultation. Reviewed the ER report — auto accident looks strong, full liability on the other driver.</div>
+            <div class="msg-time">Apr 19, 9:30 AM</div>
+          </div>
+          <div class="msg-item">
+            <div class="msg-author">Marcus Webb</div>
+            <div class="msg-content">Intake form for David Rodriguez complete. Medical records from Grady received and uploaded to shared folder.</div>
+            <div class="msg-time">Apr 18, 3:15 PM</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          <input type="text" id="msg-input" placeholder="Post an update for your team..." style="flex:1;padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:Outfit,sans-serif;outline:none;">
+          <button class="btn btn-primary btn-sm" onclick="postMessage()">Post</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY STATS -->
+    <div class="view" id="view-performance">
+      <div style="display:flex;gap:4px;background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:3px;width:fit-content;margin-bottom:20px;">
+        <button class="time-tab active" onclick="loadPerf('week',this)">This Week</button>
+        <button class="time-tab" onclick="loadPerf('month',this)">This Month</button>
+        <button class="time-tab" onclick="loadPerf('all',this)">All Time</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="perf-stats">
+        <div class="stat-mini"><div class="stat-mini-val" style="color:var(--green);" id="p-calls">34</div><div class="stat-mini-label">Calls This Period</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" id="p-bookings">6</div><div class="stat-mini-label">Bookings</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:var(--sky);" id="p-complete">82%</div><div class="stat-mini-label">Completion Rate</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:var(--orange);" id="p-noshow">14%</div><div class="stat-mini-label">No-Show Rate</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Performance Breakdown</div></div>
+        <div>
+          <div class="perf-card"><div class="perf-label">Consultations completed</div><div class="perf-val" id="pb-complete">9</div></div>
+          <div class="perf-card"><div class="perf-label">Review requests sent</div><div class="perf-val" id="pb-reviews">7</div></div>
+          <div class="perf-card"><div class="perf-label">Positive review responses</div><div class="perf-val" id="pb-pos" style="color:var(--green);">5</div></div>
+          <div class="perf-card"><div class="perf-label">No-shows</div><div class="perf-val" id="pb-noshow" style="color:var(--red);">1</div></div>
+          <div class="perf-card"><div class="perf-label">Tasks completed</div><div class="perf-val" id="pb-tasks">4</div></div>
+          <div class="perf-card"><div class="perf-label">Average call handled (AVA)</div><div class="perf-val" id="pb-avgcall">4m 52s</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY PROFILE -->
+    <div class="view" id="view-profile">
+      <div class="card">
+        <div class="card-header"><div class="card-title">My Information</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">This information appears in booking confirmations and team messages. Keep it accurate.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div><label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;">Full Name</label><input type="text" value="Sarah Mitchell" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:16px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;">Email</label><input type="email" value="sarah@harrisonandcole.com" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:16px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;">Phone</label><input type="tel" value="(404) 555-0201" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:16px;font-family:Outfit,sans-serif;outline:none;"></div>
+          <div><label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;">Role</label><input type="text" value="Attorney — Personal Injury" readonly style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:16px;font-family:Outfit,sans-serif;outline:none;opacity:.6;cursor:not-allowed;"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="toast('Profile saved.')">Save Profile</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Calendly Setup</div></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">AVA sends your Calendly link to qualified callers when booking an appointment. Paste your personal scheduling link below so clients can book directly with you.</p>
+        <div style="background:#edf7f1;border:1px solid #b8e0c8;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:16px;">&#10003;</span>
+          <div><div style="font-size:13px;font-weight:600;color:var(--green);">Scheduling link connected</div><div style="font-size:12px;color:var(--muted);">calendly.com/sarah-mitchell/30min</div></div>
+        </div>
+        <div style="margin-bottom:12px;"><label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px;">Your Calendly Link</label><input type="url" value="https://calendly.com/sarah-mitchell/30min" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:16px;font-family:Outfit,sans-serif;outline:none;"></div>
+        <button class="btn btn-primary btn-sm" onclick="toast('Scheduling link saved. AVA will use this for all future bookings.')">Save Link</button>
+      </div>
+    </div>
+
+    <!-- WHAT'S COMING -->
+    <div class="view" id="view-coming">
+      <div style="max-width:900px;">
+        <div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;color:var(--navy);margin-bottom:6px;">What's Coming</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;">New features coming to your employee dashboard. Let us know which ones would help your workflow most.</p>
+        <div class="cards-grid">
+          <div class="coming-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;"><div class="coming-card-title">&#128203; Smart Task Suggestions</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">After every AVA call, the system suggests follow-up tasks based on what the caller said — request records, schedule callback, send intake form. One click to add to your task list.</div><button class="feedback-btn" onclick="toast('Thank you! Your feedback helps us prioritize.')">Would this help you?</button></div>
+          <div class="coming-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;"><div class="coming-card-title">&#128196; Pre-Consultation Brief</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">Before each consultation, receive a one-page summary of the client's intake answers, case type, and any notes from AVA so you walk in prepared every time.</div><button class="feedback-btn" onclick="toast('Thank you! Noted.')">Would this help you?</button></div>
+          <div class="coming-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;"><div class="coming-card-title">&#128241; Client Text from Dashboard</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">Send a quick SMS to a client directly from their profile without leaving the dashboard. Confirmation, follow-up, or check-in — all tracked in the client record.</div><button class="feedback-btn" onclick="toast('Thank you! Noted.')">Would this help you?</button></div>
+          <div class="coming-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;"><div class="coming-card-title">&#128200; My Performance Insights</div><span class="badge-coming">Coming Soon</span></div><div class="coming-card-desc">A plain-language weekly summary of your personal performance — completion rate, no-show trends, review responses — with one specific action to improve this week.</div><button class="feedback-btn" onclick="toast('Thank you! Noted.')">Would this help you?</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT DETAIL PANEL -->
+    <div id="client-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:none;align-items:flex-start;justify-content:flex-end;" onclick="if(event.target===this)closeClientPanel()">
+      <div style="background:var(--white);width:100%;max-width:480px;height:100vh;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,.15);animation:fadeUp .2s ease;">
+        <div style="background:var(--navy);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;color:#fff;" id="client-panel-name">Client</div>
+          <button onclick="closeClientPanel()" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1;">&#10005;</button>
+        </div>
+        <div style="padding:20px 24px;">
+          <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px;">Client Info</div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="color:var(--muted);">Phone</span><span id="client-panel-phone" style="font-weight:500;"></span></div>
+            <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;"><span style="color:var(--muted);">Case Type</span><span id="client-panel-case" style="font-weight:500;"></span></div>
+          </div>
+          <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px;">Quick Actions</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-sky btn-sm" onclick="toast('Reschedule link sent via SMS.')">&#128197; Reschedule</button>
+              <button class="btn btn-success btn-sm" onclick="toast('Review request SMS queued.')">&#9733; Request Review</button>
+              <button class="btn btn-outline btn-sm" onclick="addClientNote()">+ Add Note</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px;">Notes</div>
+            <div id="client-notes-feed" style="font-size:13px;color:var(--muted);line-height:1.6;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORT ISSUE FAB -->
+    <button class="report-fab" onclick="openReportModal()" title="Report an Issue">
+      <div class="fab-dot"></div> Help &amp; Support
+    </button>
+
+    <!-- REPORT ISSUE MODAL -->
+    <div class="report-modal-overlay" id="report-modal-overlay" onclick="if(event.target===this)closeReportModal()">
+      <div class="report-modal">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+          <div><h3>&#128172; Report an Issue</h3><p style="font-size:13px;color:var(--muted);margin-top:4px;">Tell us what is happening. High and urgent issues are reviewed within a few hours.</p></div>
+          <button onclick="closeReportModal()" style="background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer;padding:0 0 0 12px;line-height:1;">&#10005;</button>
+        </div>
+        <div style="margin-bottom:14px;"><label class="report-label">Which section?</label>
+          <select class="report-input" id="report-section">
+            <option value="">Select...</option><option>Today</option><option>My Bookings</option><option>My Clients</option><option>My Calls</option><option>My Tasks</option><option>Team Messages</option><option>My Stats</option><option>My Profile</option><option>Other</option>
+          </select>
+        </div>
+        <div style="margin-bottom:14px;"><label class="report-label">Urgency</label>
+          <div class="urgency-pills">
+            <button class="urgency-pill" data-urgency="low" onclick="selectUrgency(this)">Low</button>
+            <button class="urgency-pill" data-urgency="medium" onclick="selectUrgency(this)">Medium</button>
+            <button class="urgency-pill" data-urgency="high" onclick="selectUrgency(this)">High</button>
+            <button class="urgency-pill" data-urgency="urgent" onclick="selectUrgency(this)">&#128680; Urgent</button>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;"><label class="report-label">Describe the issue</label>
+          <textarea class="report-input" id="report-description" rows="4" placeholder="What were you trying to do? What happened?"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" style="flex:1;" onclick="submitReport()">Send Report</button>
+          <button class="btn btn-outline" onclick="closeReportModal()">Cancel</button>
+        </div>
+        <div id="report-alert" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+  </div>
+</main>
+<script>
+// ─── NAV + VIEW SWITCHING ─────────────────────────────────────────────────
+var TITLES = {
+  'view-today':'Today','view-bookings':'My Bookings','view-leads':'My Clients',
+  'view-calls':'My Calls','view-tasks':'My Tasks','view-messages':'Team Messages',
+  'view-performance':'My Stats','view-profile':'My Profile','view-coming':"What's Coming"
+};
+
+function switchView(viewId) {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  var el = document.getElementById(viewId);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var nav = document.querySelector('[data-view="' + viewId + '"]');
+  if (nav) nav.classList.add('active');
+  document.getElementById('page-title').textContent = TITLES[viewId] || '';
+  closeMobileNav();
+  if (window.innerWidth <= 768) window.scrollTo(0, 0);
+}
+document.querySelectorAll('.nav-item[data-view]').forEach(function(btn) {
+  btn.addEventListener('click', function(){ switchView(this.getAttribute('data-view')); });
+});
+
+// ─── MOBILE NAV ───────────────────────────────────────────────────────────
+function toggleMobileNav() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var hamburger = document.getElementById('hamburger-btn');
+  if (!sidebar) return;
+  var isOpen = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', !isOpen);
+  if (overlay) overlay.classList.toggle('visible', !isOpen);
+  if (hamburger) {
+    var spans = hamburger.querySelectorAll('span');
+    if (!isOpen) {
+      if (spans[0]) spans[0].style.cssText = 'transform:translateY(6px) rotate(45deg)';
+      if (spans[1]) spans[1].style.cssText = 'opacity:0';
+      if (spans[2]) spans[2].style.cssText = 'transform:translateY(-6px) rotate(-45deg)';
+    } else { spans.forEach(function(s){ s.style.cssText = ''; }); }
+  }
+}
+function closeMobileNav() {
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var hamburger = document.getElementById('hamburger-btn');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('visible');
+  if (hamburger) hamburger.querySelectorAll('span').forEach(function(s){ s.style.cssText = ''; });
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+// ─── TODAY ACTIONS ────────────────────────────────────────────────────────
+function todayComplete(btn, name) {
+  var row = btn.closest('div[style*="padding:12px 0"]');
+  if (!row) return;
+  var actionsDiv = btn.closest('div[style*="display:flex"]');
+  var statusPill = actionsDiv ? actionsDiv.querySelector('.pill') : null;
+  if (statusPill) { statusPill.className = 'pill pill-green'; statusPill.textContent = 'Completed'; }
+  actionsDiv.innerHTML = '<span class="pill pill-green">Completed</span> <button class="btn btn-success btn-sm" style="font-size:11px;" onclick="toast(\'Review request SMS queued for ' + name + '.\')">&#9733; Send Review SMS</button>';
+  toast(name + ' marked complete. Review request SMS queued.');
+}
+function todayNoShow(btn, name) {
+  var actionsDiv = btn.closest('div[style*="display:flex"]');
+  actionsDiv.innerHTML = '<span class="pill pill-red">No-Show</span><span style="font-size:11px;color:var(--muted);margin-left:8px;">Follow-up SMS queued in 2 hours</span>';
+  toast(name + ' marked no-show. Follow-up SMS will fire in 2 hours.');
+}
+function todayReschedule(name) {
+  toast('Reschedule link sent to ' + name + ' via SMS.');
+}
+
+// ─── BOOKING ACTIONS ──────────────────────────────────────────────────────
+function bookingAct(rowId, action) {
+  var stEl = document.getElementById(rowId + '-st');
+  var acEl = document.getElementById(rowId + '-ac');
+  if (!stEl || !acEl) return;
+  if (action === 'complete') {
+    stEl.innerHTML = '<span class="pill pill-green">Completed</span>';
+    var reviewBtn = document.createElement('button');
+    reviewBtn.className = 'btn btn-success btn-sm'; reviewBtn.style.fontSize = '11px'; reviewBtn.textContent = '★ Send Review SMS';
+    reviewBtn.onclick = function(){ bookingAct(rowId, 'review'); };
+    acEl.innerHTML = ''; acEl.appendChild(reviewBtn);
+    toast('Booking marked complete. Mark review SMS when ready.');
+  } else if (action === 'noshow') {
+    stEl.innerHTML = '<span class="pill pill-red">No-Show</span>';
+    acEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Follow-up SMS queued</span>';
+    toast('No-show marked. Follow-up SMS fires in 2 hours.');
+  } else if (action === 'reschedule') {
+    stEl.innerHTML = '<span class="pill pill-orange">Reschedule Sent</span>';
+    acEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Booking link sent via SMS</span>';
+    toast('Reschedule link sent via SMS.');
+  } else if (action === 'cancel') {
+    stEl.innerHTML = '<span class="pill pill-gray">Cancelled</span>';
+    acEl.innerHTML = '<span style="font-size:11px;color:var(--muted);">Cancellation SMS queued</span>';
+    toast('Booking cancelled. Cancellation SMS queued.');
+  } else if (action === 'review') {
+    acEl.innerHTML = '<span class="pill pill-green" style="font-size:11px;">Review SMS Sent &#10003;</span>';
+    toast('Review request SMS queued.');
+  }
+}
+
+function filterBookings(filter) {
+  var rows = document.querySelectorAll('#bookings-tbody tr');
+  rows.forEach(function(row) {
+    var statusEl = row.querySelector('[id$="-st"]');
+    if (!statusEl) { row.style.display = ''; return; }
+    var text = statusEl.textContent.toLowerCase();
+    var show = filter === 'all' || 
+      (filter === 'upcoming' && (text.includes('scheduled') || text.includes('reschedule'))) ||
+      (filter === 'completed' && text.includes('completed')) ||
+      (filter === 'no_show' && text.includes('no-show'));
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+// ─── LEADS / CLIENT STAGE ─────────────────────────────────────────────────
+function updateStage(sel, name) {
+  toast(name + ' moved to ' + sel.value + '.');
+}
+
+// ─── CLIENT DETAIL PANEL ─────────────────────────────────────────────────
+var clientNotes = {
+  'Marcus Thompson': ['Sarah: Medical records from Northside requested. Follow up if not received by Apr 23.'],
+  'Jennifer Liu': ['Sarah: ER report reviewed — strong case. Full liability on other driver.'],
+  'David Rodriguez': ['Marcus: Intake complete. Medical records from Grady received.']
+};
+function openClientPanel(name, caseType, phone) {
+  document.getElementById('client-panel-name').textContent = name || 'Client';
+  document.getElementById('client-panel-phone').textContent = phone || '--';
+  document.getElementById('client-panel-case').textContent = caseType || '--';
+  var notes = clientNotes[name] || ['No notes yet for this client.'];
+  document.getElementById('client-notes-feed').innerHTML = notes.map(function(n){ return '<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">' + n + '</div>'; }).join('');
+  var overlay = document.getElementById('client-overlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+function closeClientPanel() {
+  var overlay = document.getElementById('client-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+function addClientNote() {
+  var note = prompt('Add a note for this client:');
+  if (!note || !note.trim()) return;
+  var name = document.getElementById('client-panel-name').textContent;
+  if (!clientNotes[name]) clientNotes[name] = [];
+  clientNotes[name].unshift('You: ' + note.trim());
+  var feed = document.getElementById('client-notes-feed');
+  var newNote = document.createElement('div');
+  newNote.style.cssText = 'padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;';
+  newNote.textContent = 'You: ' + note.trim();
+  feed.insertBefore(newNote, feed.firstChild);
+  toast('Note saved.');
+}
+
+// ─── TASKS ────────────────────────────────────────────────────────────────
+function cycleTask(el, taskId) {
+  var row = document.getElementById(taskId);
+  var pill = document.getElementById(taskId + '-pill');
+  var status = row ? row.getAttribute('data-status') : 'pending';
+  var next = status === 'pending' ? 'inprog' : status === 'inprog' ? 'done' : 'pending';
+  if (row) row.setAttribute('data-status', next);
+  if (next === 'inprog') {
+    el.className = 'task-check in-prog'; el.innerHTML = '&#9654;';
+    el.closest('.task-row').querySelector('.task-text').classList.remove('done');
+    if (pill) { pill.className = 'pill pill-blue'; pill.style.fontSize = '10px'; pill.textContent = 'In Progress'; }
+  } else if (next === 'done') {
+    el.className = 'task-check done'; el.innerHTML = '&#10003;';
+    el.closest('.task-row').querySelector('.task-text').classList.add('done');
+    if (pill) { pill.className = 'pill pill-green'; pill.style.fontSize = '10px'; pill.textContent = 'Complete'; }
+  } else {
+    el.className = 'task-check'; el.innerHTML = '';
+    el.closest('.task-row').querySelector('.task-text').classList.remove('done');
+    if (pill) { pill.className = 'pill pill-orange'; pill.style.fontSize = '10px'; pill.textContent = 'Pending'; }
+  }
+}
+
+function filterTasks(filter, btn) {
+  document.querySelectorAll('[onclick*="filterTasks"]').forEach(function(b){ b.style.borderColor=''; b.style.color=''; });
+  if (btn) { btn.style.borderColor = 'var(--navy)'; btn.style.color = 'var(--navy)'; }
+  document.querySelectorAll('#task-list .task-row').forEach(function(row) {
+    var s = row.getAttribute('data-status');
+    var show = filter === 'all' || (filter === 'pending' && s === 'pending') || (filter === 'inprog' && s === 'inprog') || (filter === 'done' && s === 'done');
+    row.style.display = show ? '' : 'none';
+  });
+}
+
+function addTask() {
+  var title = prompt('Task title:');
+  if (!title || !title.trim()) return;
+  var due = prompt('Due date (e.g. Apr 25):') || 'No due date';
+  var list = document.getElementById('task-list');
+  var id = 'tnew' + Date.now();
+  var row = document.createElement('div');
+  row.className = 'task-row'; row.setAttribute('data-status','pending'); row.id = id;
+  var check = document.createElement('div');
+  check.className = 'task-check';
+  check.onclick = function(){ cycleTask(check, id); };
+  var text = document.createElement('div');
+  text.className = 'task-text';
+  text.innerHTML = title.trim() + '<span style="font-size:11px;color:var(--muted);display:block;margin-top:2px;">Self-assigned &middot; Due ' + due + '</span>';
+  var pill = document.createElement('span');
+  pill.id = id + '-pill'; pill.className = 'pill pill-orange'; pill.style.cssText = 'font-size:10px;white-space:nowrap;'; pill.textContent = 'Pending';
+  row.appendChild(check); row.appendChild(text); row.appendChild(pill);
+  list.insertBefore(row, list.firstChild);
+  toast('Task added.');
+}
+
+// ─── TEAM MESSAGES ────────────────────────────────────────────────────────
+function postMessage() {
+  var input = document.getElementById('msg-input');
+  if (!input || !input.value.trim()) { toast('Write a message first.'); return; }
+  var msg = input.value.trim();
+  var feed = document.getElementById('messages-feed');
+  var now = new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  var item = document.createElement('div');
+  item.className = 'msg-item';
+  item.innerHTML = '<div class="msg-author">You (Sarah Mitchell)</div><div class="msg-content">' + msg + '</div><div class="msg-time">' + now + '</div>';
+  feed.insertBefore(item, feed.firstChild);
+  input.value = '';
+  toast('Message posted to team feed.');
+}
+
+// ─── CALL FLAG ────────────────────────────────────────────────────────────
+function flagCall(btn) {
+  var isFlagged = btn.textContent.includes('Flagged');
+  if (isFlagged) {
+    btn.innerHTML = '&#9873; Flag'; btn.style.color = ''; btn.style.borderColor = '';
+    toast('Flag removed.');
+  } else {
+    btn.innerHTML = '&#9873; Flagged'; btn.style.color = 'var(--red)'; btn.style.borderColor = 'var(--red)';
+    toast('Call flagged for follow-up.');
+  }
+}
+
+// ─── PERFORMANCE ─────────────────────────────────────────────────────────
+var PERF_DATA = {
+  week:  { calls:34, bookings:6, complete:'82%', noshow:'14%', pb:[9,7,5,1,4,'4m 52s'] },
+  month: { calls:127, bookings:22, complete:'85%', noshow:'12%', pb:[18,19,16,3,12,'5m 10s'] },
+  all:   { calls:371, bookings:68, complete:'87%', noshow:'10%', pb:[59,61,52,7,41,'4m 44s'] }
+};
+function loadPerf(range, btn) {
+  var d = PERF_DATA[range] || PERF_DATA.week;
+  document.querySelectorAll('[onclick*="loadPerf"]').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  document.getElementById('p-calls').textContent = d.calls;
+  document.getElementById('p-bookings').textContent = d.bookings;
+  document.getElementById('p-complete').textContent = d.complete;
+  document.getElementById('p-noshow').textContent = d.noshow;
+  var ids = ['pb-complete','pb-reviews','pb-pos','pb-noshow','pb-tasks','pb-avgcall'];
+  ids.forEach(function(id, i){ var el = document.getElementById(id); if (el) el.textContent = d.pb[i]; });
+}
+
+// ─── REPORT ISSUE ─────────────────────────────────────────────────────────
+function openReportModal() { document.getElementById('report-modal-overlay').classList.add('open'); }
+function closeReportModal() { document.getElementById('report-modal-overlay').classList.remove('open'); }
+function selectUrgency(btn) {
+  document.querySelectorAll('.urgency-pill').forEach(function(p){ p.className = 'urgency-pill'; });
+  btn.classList.add('sel-' + btn.getAttribute('data-urgency'));
+}
+function submitReport() {
+  var section = document.getElementById('report-section').value;
+  var desc = document.getElementById('report-description').value.trim();
+  var urgencyEl = document.querySelector('.urgency-pill[class*="sel-"]');
+  var urgency = urgencyEl ? urgencyEl.getAttribute('data-urgency') : 'medium';
+  if (!section) { toast('Please select which section this is about.'); return; }
+  if (!desc) { toast('Please describe the issue.'); return; }
+  var alertEl = document.getElementById('report-alert');
+  if (alertEl) {
+    alertEl.innerHTML = '<div style="background:#edf7f1;border:1px solid #b8e0c8;border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);margin-top:4px;">Report sent to Aligned Impact. ' + (urgency==='urgent'||urgency==='high'?'High urgency issues are reviewed within a few hours.':'We will follow up shortly.') + '</div>';
+  }
+  document.getElementById('report-description').value = '';
+  document.getElementById('report-section').value = '';
+  document.querySelectorAll('.urgency-pill').forEach(function(p){ p.className = 'urgency-pill'; });
+}
+</script>
+</body>
+</html>
